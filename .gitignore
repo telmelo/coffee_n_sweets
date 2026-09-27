@@ -1,5 +1,5 @@
 # Variaveis de Ambiente e Segredos
-.env
+config.properties
 *.env
 
 # IntelliJ IDEA
