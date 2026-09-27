@@ -20,7 +20,7 @@ public class Conexao {
             p.load(new InputStreamReader(in, StandardCharsets.UTF_8));
         } catch (IOException e) {
             System.err.println("Não foi possível ler config.properties: " + e.getMessage());
-            System.err.println("Copie config.properties.example para config.properties e ajuste os valores.");
+            System.err.println("Copie config.properties para config.properties e ajuste os valores.");
         }
         return p;
     }

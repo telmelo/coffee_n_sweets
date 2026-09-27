@@ -9,6 +9,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.net.InetSocketAddress;
 import com.sun.net.httpserver.HttpContext;
 import http.ClienteHandler;
+import http.ProdutoHandler;
 
 
 public class Servidor {
@@ -16,6 +17,7 @@ public class Servidor {
         HttpServer servidor = HttpServer.create(new InetSocketAddress(8080), 0);
 
         servidor.createContext("/clientes", new ClienteHandler());
+        servidor.createContext("/produtos", new ProdutoHandler());
         servidor.setExecutor(null);
         servidor.start();
         System.out.println("Servidor esta no ar. http://localhost:8080/clientes");
