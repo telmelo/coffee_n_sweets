@@ -6,7 +6,7 @@ import java.util.function.DoubleFunction;
 import static http.Html.escapar;
 
 public class Graficos {
-    private static final String COR_BARRA = "#6f4e37";
+    private static final String COR_BARRA = "#e0457b";
     private static final String COR_TEXTO = "#444";
     private static final String COR_GRADE = "#ddd";
 

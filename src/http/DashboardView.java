@@ -186,11 +186,11 @@ public class DashboardView {
         return "<style>"
                 + ".cartoes{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px}"
                 + ".cartao{border:1px solid #ddd;border-radius:8px;padding:12px 20px;min-width:170px}"
-                + ".cartao .valor{font-size:1.6em;font-weight:bold;color:#6f4e37}"
+                + ".cartao .valor{font-size:1.6em;font-weight:bold;color:#c2306a}"
                 + ".secao{margin-bottom:40px}"
                 + ".consulta{color:#666;font-size:.9em;margin-top:-8px}"
                 + "details{margin-top:12px}"
-                + "summary{cursor:pointer;color:#6f4e37}"
+                + "summary{cursor:pointer;color:#c2306a}"
                 + "</style>";
     }
 }

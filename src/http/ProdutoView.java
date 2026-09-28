@@ -14,28 +14,28 @@ public class ProdutoView {
         StringBuilder sb = new StringBuilder();
 
         if (mensagemErro != null) {
-            sb.append("<p style=\"color:#b00020\"><strong>").append(escapar(mensagemErro)).append("</strong></p>");
+            sb.append("<div class=\"alerta\">").append(escapar(mensagemErro)).append("</div>");
         }
 
-        sb.append("<p><a href=\"/produtos/novo\">+ Novo produto</a></p>");
-        sb.append("<table><tr><th>Nome</th><th>Preço</th><th>Descrição</th><th>Ações</th></tr>");
+        sb.append("<div class=\"barra\"><a class=\"botao\" href=\"/produtos/novo\">+ Novo produto</a></div>");
+        sb.append("<div class=\"tabela-caixa\"><table><tr><th>Nome</th><th>Preço</th><th>Descrição</th><th>Ações</th></tr>");
 
         for (Produto p : produtos) {
             sb.append("<tr>");
             sb.append("<td>").append(escapar(p.getNome())).append("</td>");
             sb.append("<td>").append(formatarPreco(p.getPreco())).append("</td>");
             sb.append("<td>").append(escapar(p.getDescricao())).append("</td>");
-            sb.append("<td>");
-            sb.append("<a href=\"/produtos/editar?id=").append(p.getIDProduto()).append("\">Editar</a> ");
-            sb.append("<form method=\"post\" action=\"/produtos/excluir\" style=\"display:inline\" ")
+            sb.append("<td><div class=\"acoes\">");
+            sb.append("<a class=\"botao botao-pequeno botao-secundario\" href=\"/produtos/editar?id=").append(p.getIDProduto()).append("\">Editar</a>");
+            sb.append("<form method=\"post\" action=\"/produtos/excluir\" class=\"form-inline\" ")
                     .append("onsubmit=\"return confirm('Excluir este produto?')\">");
             sb.append("<input type=\"hidden\" name=\"id\" value=\"").append(p.getIDProduto()).append("\">");
-            sb.append("<button type=\"submit\">Excluir</button>");
+            sb.append("<button type=\"submit\" class=\"botao-pequeno botao-perigo\">Excluir</button>");
             sb.append("</form>");
-            sb.append("</td>");
+            sb.append("</div></td>");
             sb.append("</tr>");
         }
-        sb.append("</table>");
+        sb.append("</table></div>");
 
         return sb.toString();
     }
@@ -48,19 +48,19 @@ public class ProdutoView {
         StringBuilder sb = new StringBuilder();
 
         if (mensagemErro != null) {
-            sb.append("<p style=\"color:#b00020\"><strong>").append(escapar(mensagemErro)).append("</strong></p>");
+            sb.append("<div class=\"alerta\">").append(escapar(mensagemErro)).append("</div>");
         }
 
-        sb.append("<form method=\"post\" action=\"/produtos/salvar\">");
+        sb.append("<form class=\"formulario\" method=\"post\" action=\"/produtos/salvar\">");
         sb.append("<input type=\"hidden\" name=\"id\" value=\"").append(p.getIDProduto()).append("\">");
-        sb.append("<p><label>Nome<br><input type=\"text\" name=\"nome\" maxlength=\"40\" required value=\"")
-                .append(escapar(p.getNome())).append("\"></label></p>");
-        sb.append("<p><label>Preço (R$)<br><input type=\"text\" name=\"preco\" required value=\"")
-                .append(escapar(textoPreco)).append("\"></label></p>");
-        sb.append("<p><label>Descrição<br><textarea name=\"descricao\" rows=\"4\" cols=\"40\" required>")
-                .append(escapar(p.getDescricao())).append("</textarea></label></p>");
-        sb.append("<button type=\"submit\">Salvar</button> ");
-        sb.append("<a href=\"/produtos\">Cancelar</a>");
+        sb.append("<div class=\"campo\"><label for=\"nome\">Nome</label><input id=\"nome\" type=\"text\" name=\"nome\" maxlength=\"40\" required value=\"")
+                .append(escapar(p.getNome())).append("\"></div>");
+        sb.append("<div class=\"campo\"><label for=\"preco\">Preço (R$)</label><input id=\"preco\" type=\"text\" name=\"preco\" required value=\"")
+                .append(escapar(textoPreco)).append("\"></div>");
+        sb.append("<div class=\"campo\"><label for=\"descricao\">Descrição</label><textarea id=\"descricao\" name=\"descricao\" rows=\"4\" cols=\"40\" required>")
+                .append(escapar(p.getDescricao())).append("</textarea></div>");
+        sb.append("<div class=\"formulario-acoes\"><button type=\"submit\">Salvar</button>");
+        sb.append("<a class=\"botao botao-secundario\" href=\"/produtos\">Cancelar</a></div>");
         sb.append("</form>");
 
         return sb.toString();

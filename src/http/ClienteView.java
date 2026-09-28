@@ -13,28 +13,28 @@ public class ClienteView {
         StringBuilder sb = new StringBuilder();
 
         if (mensagemErro != null) {
-            sb.append("<p style=\"color:#b00020\"><strong>").append(escapar(mensagemErro)).append("</strong></p>");
+            sb.append("<div class=\"alerta\">").append(escapar(mensagemErro)).append("</div>");
         }
 
-        sb.append("<p><a href=\"/clientes/novo\">+ Novo cliente</a></p>");
-        sb.append("<table><tr><th>Nome</th><th>E-mail</th><th>Cadastro</th><th>Ações</th></tr>");
+        sb.append("<div class=\"barra\"><a class=\"botao\" href=\"/clientes/novo\">+ Novo cliente</a></div>");
+        sb.append("<div class=\"tabela-caixa\"><table><tr><th>Nome</th><th>E-mail</th><th>Cadastro</th><th>Ações</th></tr>");
 
         for (Cliente c : clientes) {
             sb.append("<tr>");
             sb.append("<td>").append(escapar(c.getNome())).append("</td>");
             sb.append("<td>").append(escapar(c.getEmail())).append("</td>");
             sb.append("<td>").append(c.getDataCadastro()).append("</td>");
-            sb.append("<td>");
-            sb.append("<a href=\"/clientes/editar?id=").append(c.getIDCliente()).append("\">Editar</a> ");
-            sb.append("<form method=\"post\" action=\"/clientes/excluir\" style=\"display:inline\" ")
+            sb.append("<td><div class=\"acoes\">");
+            sb.append("<a class=\"botao botao-pequeno botao-secundario\" href=\"/clientes/editar?id=").append(c.getIDCliente()).append("\">Editar</a>");
+            sb.append("<form method=\"post\" action=\"/clientes/excluir\" class=\"form-inline\" ")
                     .append("onsubmit=\"return confirm('Excluir este cliente?')\">");
             sb.append("<input type=\"hidden\" name=\"id\" value=\"").append(c.getIDCliente()).append("\">");
-            sb.append("<button type=\"submit\">Excluir</button>");
+            sb.append("<button type=\"submit\" class=\"botao-pequeno botao-perigo\">Excluir</button>");
             sb.append("</form>");
-            sb.append("</td>");
+            sb.append("</div></td>");
             sb.append("</tr>");
         }
-        sb.append("</table>");
+        sb.append("</table></div>");
 
         return sb.toString();
     }
@@ -44,17 +44,17 @@ public class ClienteView {
         StringBuilder sb = new StringBuilder();
 
         if (mensagemErro != null) {
-            sb.append("<p style=\"color:#b00020\"><strong>").append(escapar(mensagemErro)).append("</strong></p>");
+            sb.append("<div class=\"alerta\">").append(escapar(mensagemErro)).append("</div>");
         }
 
-        sb.append("<form method=\"post\" action=\"/clientes/salvar\">");
+        sb.append("<form class=\"formulario\" method=\"post\" action=\"/clientes/salvar\">");
         sb.append("<input type=\"hidden\" name=\"id\" value=\"").append(c.getIDCliente()).append("\">");
-        sb.append("<p><label>Nome<br><input type=\"text\" name=\"nome\" maxlength=\"40\" required value=\"")
-                .append(escapar(c.getNome())).append("\"></label></p>");
-        sb.append("<p><label>E-mail<br><input type=\"email\" name=\"email\" maxlength=\"40\" required value=\"")
-                .append(escapar(c.getEmail())).append("\"></label></p>");
-        sb.append("<button type=\"submit\">Salvar</button> ");
-        sb.append("<a href=\"/clientes\">Cancelar</a>");
+        sb.append("<div class=\"campo\"><label for=\"nome\">Nome</label><input id=\"nome\" type=\"text\" name=\"nome\" maxlength=\"40\" required value=\"")
+                .append(escapar(c.getNome())).append("\"></div>");
+        sb.append("<div class=\"campo\"><label for=\"email\">E-mail</label><input id=\"email\" type=\"email\" name=\"email\" maxlength=\"40\" required value=\"")
+                .append(escapar(c.getEmail())).append("\"></div>");
+        sb.append("<div class=\"formulario-acoes\"><button type=\"submit\">Salvar</button>");
+        sb.append("<a class=\"botao botao-secundario\" href=\"/clientes\">Cancelar</a></div>");
         sb.append("</form>");
 
         return sb.toString();

@@ -10,7 +10,7 @@ matplotlib.use("Agg")
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 
-COR_PRINCIPAL = "#6f4e37"
+COR_PRINCIPAL = "#e0457b"
 
 
 def moeda(valor):
@@ -54,7 +54,7 @@ def grafico_boxplot_por_forma(dados, pasta):
         meanprops={"marker": "D", "markerfacecolor": "white", "markeredgecolor": "black"},
     )
     for caixa in caixas["boxes"]:
-        caixa.set_facecolor("#d9c3b0")
+        caixa.set_facecolor("#ffd6e7")
 
     eixo.set_xticks(range(1, len(formas) + 1))
     eixo.set_xticklabels(formas)
