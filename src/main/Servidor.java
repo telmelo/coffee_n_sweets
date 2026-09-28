@@ -7,8 +7,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import com.sun.net.httpserver.HttpExchange;
 import java.net.InetSocketAddress;
+import java.nio.file.Path;
+
 import com.sun.net.httpserver.HttpContext;
+import http.ArquivoEstaticoHandler;
 import http.ClienteHandler;
+import http.DashboardHandler;
 import http.ProdutoHandler;
 
 
@@ -18,6 +22,8 @@ public class Servidor {
 
         servidor.createContext("/clientes", new ClienteHandler());
         servidor.createContext("/produtos", new ProdutoHandler());
+        servidor.createContext("/dashboard", new DashboardHandler());
+        servidor.createContext("/graficos", new ArquivoEstaticoHandler("/graficos", Path.of("graficos_gerados")));
         servidor.setExecutor(null);
         servidor.start();
         System.out.println("Servidor esta no ar. http://localhost:8080/clientes");

@@ -1,5 +1,6 @@
 # Variaveis de Ambiente e Segredos
 config.properties
+graficos_gerados/
 *.env
 
 # IntelliJ IDEA
