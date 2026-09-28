@@ -2,7 +2,7 @@
 
 Sistema de gerenciamento e automação de pedidos para cafeterias, restaurantes e derivados
 
-A proposta é simples de explicar e bem menos simples de modelar: uma cafeteria vende lanches, bebidas e cafés, atende clientes em mesas ou para viagem, registra quem preparou cada item e com qual equipamento, e ainda controla os grãos que compra de fornecedores. Tudo isso vira um esquema relacional com 17 tabelas, e este repositório contém o banco completo e a aplicação web que conversa com ele.
+A proposta desse repositório é integrar e registrar dados de um banco MySQL com uma interface programada sem o uso de frameworks/ferramentas ORM. O nosso projeto resolve problemas práticos de gerenciamento de pedidos de estabelecimentos comerciais, além de manter registro de dados de fornecedores, mesas, preços etc
 
 ## O que o sistema faz
 
@@ -94,6 +94,7 @@ http://localhost:8080/clientes
 O servidor fica em execução até ser interrompido pela IDE.
 
 ## Equipe
+Coffee N' Sweets é um projeto de código open-source desenvolvido por
 
 - Telmo Melo (telmelo)
 - Ian Felipe (AnzinFelipe)
