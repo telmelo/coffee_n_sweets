@@ -43,6 +43,26 @@ public class ProdutoDAO {
         return lista;
     }
 
+    /** Busca um produto pelo ID; devolve null se não existir. */
+    public Produto buscarPorId(int id) throws SQLException {
+        String sql = "SELECT * FROM Produto WHERE ID_produto=?";
+        try (Connection conn = Conexao.getConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Produto(
+                            rs.getInt("ID_produto"),
+                            rs.getString("Nome"),
+                            rs.getFloat("Preco"),
+                            rs.getString("Descricao")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
     public void atualizar(Produto p) throws SQLException {
         String sql = "UPDATE Produto SET Nome=?, Preco=?, Descricao=? WHERE ID_produto=?";
         try (Connection conn = Conexao.getConexao();

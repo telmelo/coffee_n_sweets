@@ -43,6 +43,26 @@ public class ClienteDAO {
         return lista;
     }
 
+    /** Busca um cliente pelo ID; devolve null se não existir. */
+    public Cliente buscarPorId(int id) throws SQLException {
+        String sql = "SELECT * FROM Cliente WHERE ID_cliente=?";
+        try (Connection conn = Conexao.getConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Cliente(
+                            rs.getInt("ID_cliente"),
+                            rs.getString("Nome"),
+                            rs.getString("Email"),
+                            rs.getDate("Data_cadastro").toLocalDate()
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
     public void atualizar(Cliente c) throws SQLException {
         String sql = "UPDATE Cliente SET Nome=?, Email=?, Data_cadastro=? WHERE ID_cliente=?";
         try (Connection conn = Conexao.getConexao();
