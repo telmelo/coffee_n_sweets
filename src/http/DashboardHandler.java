@@ -16,11 +16,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Rota:
- *   GET /dashboard -> executa as 4 consultas do ConsultasDAO, pede ao Python para gerar
- *                     os gráficos (com alternativa em SVG) e monta a página
- */
 public class DashboardHandler implements HttpHandler {
     private final ConsultasDAO consultasDAO = new ConsultasDAO();
     private final ClienteDAO clienteDAO = new ClienteDAO();

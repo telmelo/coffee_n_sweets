@@ -5,16 +5,11 @@ import java.util.function.DoubleFunction;
 
 import static http.Html.escapar;
 
-/**
- * Gera gráficos como SVG (texto), direto em Java, sem nenhuma biblioteca externa.
- * O SVG é inserido dentro do HTML da página e o navegador desenha o gráfico.
- */
 public class Graficos {
     private static final String COR_BARRA = "#6f4e37";
     private static final String COR_TEXTO = "#444";
     private static final String COR_GRADE = "#ddd";
 
-    /** Barras horizontais: bom para rankings (ex: top 10 produtos). */
     public static String barrasHorizontais(List<String> rotulos, List<Double> valores, DoubleFunction<String> formato) {
         if (rotulos.isEmpty()) return "<p>Sem dados para exibir.</p>";
 
@@ -44,7 +39,6 @@ public class Graficos {
         return sb.toString();
     }
 
-    /** Barras verticais: bom para comparar poucas categorias (ex: formas de pagamento). */
     public static String barrasVerticais(List<String> rotulos, List<Double> valores, DoubleFunction<String> formato) {
         if (rotulos.isEmpty()) return "<p>Sem dados para exibir.</p>";
 
@@ -80,7 +74,6 @@ public class Graficos {
         return sb.toString();
     }
 
-    /** Gráfico de linha: bom para evolução ao longo do tempo (ex: faturamento por dia). */
     public static String linha(List<String> rotulos, List<Double> valores, DoubleFunction<String> formato) {
         if (rotulos.isEmpty()) return "<p>Sem dados para exibir.</p>";
 
@@ -92,7 +85,6 @@ public class Graficos {
 
         StringBuilder sb = abrirSvg(largura, altura);
 
-        // linhas de grade horizontais (0%, 50%, 100%) com o valor no eixo Y
         for (int k = 0; k <= 2; k++) {
             double fracao = k / 2.0;
             int y = (int) Math.round(altura - margemBase - fracao * areaY);
@@ -132,7 +124,6 @@ public class Graficos {
         return sb.toString();
     }
 
-    // ---------- auxiliares ----------
 
     private static StringBuilder abrirSvg(int largura, int altura) {
         StringBuilder sb = new StringBuilder();
@@ -144,7 +135,7 @@ public class Graficos {
 
     private static double maximo(List<Double> valores) {
         double max = valores.stream().mapToDouble(Double::doubleValue).max().orElse(1);
-        return max <= 0 ? 1 : max; // evita divisão por zero
+        return max <= 0 ? 1 : max;
     }
 
     private static String cortar(String texto, int limite) {

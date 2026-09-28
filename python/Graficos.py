@@ -1,13 +1,3 @@
-"""
-Gera os gráficos do dashboard da Coffee & Sweets.
-
-Uso:  python graficos.py <pasta_de_saida>
-Entrada (stdin): JSON enviado pelo Java com os resultados das consultas SQL.
-Saída: arquivos PNG na pasta informada.
-
-Este script NÃO acessa o banco de dados: todo o SQL fica no Java (ConsultasDAO).
-O Python só recebe os dados já consultados e desenha os gráficos.
-"""
 import json
 import os
 import sys
@@ -16,7 +6,7 @@ from datetime import date
 
 import matplotlib
 
-matplotlib.use("Agg")  # backend sem janela: só grava arquivos
+matplotlib.use("Agg")
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 
@@ -36,7 +26,6 @@ def salvar(figura, pasta, nome_arquivo):
 
 
 def grafico_vazio(pasta, nome_arquivo, titulo):
-    """Imagem de aviso quando a consulta não retornou dados."""
     figura, eixo = plt.subplots(figsize=(6, 3))
     eixo.text(0.5, 0.5, "Sem dados para exibir", ha="center", va="center", fontsize=13, color="#666")
     eixo.set_title(titulo)
@@ -45,13 +34,6 @@ def grafico_vazio(pasta, nome_arquivo, titulo):
 
 
 def grafico_boxplot_por_forma(dados, pasta):
-    """
-    Boxplot do faturamento diário de cada forma de pagamento.
-    Cada linha de 'dados' é o faturamento de UM dia em UMA forma de pagamento.
-    Como ler: a caixa vai do 1º ao 3º quartil (50% central dos dias), a linha dentro é a
-    mediana, o losango é a média, os bigodes chegam até 1,5 x a amplitude interquartil
-    e os pontos isolados são dias atípicos (outliers).
-    """
     titulo = "Distribuição do faturamento diário por forma de pagamento"
     if not dados:
         return grafico_vazio(pasta, "faturamento_boxplot.png", titulo)
@@ -122,7 +104,6 @@ def grafico_barras_horizontais(itens, rotulo_nome, rotulo_valor, titulo, rotulo_
 
 
 def main():
-    # No Windows o stdin/stdout usam cp1252 por padrão; forçamos UTF-8 para não corromper acentos
     sys.stdin.reconfigure(encoding="utf-8")
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")

@@ -9,11 +9,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * Serve arquivos de uma pasta do disco (ex: as imagens PNG geradas pelo Python).
- * Exemplo: new ArquivoEstaticoHandler("/graficos", Path.of("graficos_gerados"))
- * responde GET /graficos/top_produtos.png com o arquivo graficos_gerados/top_produtos.png
- */
 public class ArquivoEstaticoHandler implements HttpHandler {
     private final String prefixo;
     private final Path pasta;
@@ -34,7 +29,6 @@ public class ArquivoEstaticoHandler implements HttpHandler {
         String nomeArquivo = caminho.substring(prefixo.length()).replaceFirst("^/", "");
         Path arquivo = pasta.resolve(nomeArquivo).normalize();
 
-        // segurança: impede acessar arquivos fora da pasta (ex: /graficos/../../senha.txt)
         if (!arquivo.startsWith(pasta) || !Files.isRegularFile(arquivo)) {
             Resposta.naoEncontrado(troca);
             return;
@@ -42,7 +36,7 @@ public class ArquivoEstaticoHandler implements HttpHandler {
 
         byte[] conteudo = Files.readAllBytes(arquivo);
         troca.getResponseHeaders().set("Content-Type", tipoConteudo(nomeArquivo));
-        troca.getResponseHeaders().set("Cache-Control", "no-store"); // sempre pega a versão mais nova
+        troca.getResponseHeaders().set("Cache-Control", "no-store");
         troca.sendResponseHeaders(200, conteudo.length);
         try (OutputStream saida = troca.getResponseBody()) {
             saida.write(conteudo);

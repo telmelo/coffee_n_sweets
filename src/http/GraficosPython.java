@@ -10,21 +10,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
-/**
- * Gera os gráficos chamando o script Python (python/graficos.py).
- *
- * O Java continua sendo o único a acessar o banco: aqui só serializamos o resultado
- * das consultas em JSON, enviamos ao Python pela entrada padrão (stdin) e o Python
- * grava as imagens PNG em PASTA_SAIDA.
- */
 public class GraficosPython {
     public static final Path PASTA_SAIDA = Path.of("graficos_gerados");
     private static final Path SCRIPT = Path.of("python", "graficos.py");
 
-    // No Windows o interpretador costuma ser "python" ou "py"; tentamos os dois
     private static final String[] COMANDOS_PYTHON = {"python", "py"};
 
-    /** Devolve true se os gráficos foram gerados; false se o Python não estiver disponível ou falhar. */
     public static boolean gerar(List<FaturamentoDTO> faturamento,
                                 List<TopProdutosDTO> topProdutos,
                                 List<BaristasDestaqueDTO> baristas) {
@@ -33,7 +24,7 @@ public class GraficosPython {
         for (String comando : COMANDOS_PYTHON) {
             try {
                 ProcessBuilder construtor = new ProcessBuilder(comando, SCRIPT.toString(), PASTA_SAIDA.toString());
-                construtor.redirectErrorStream(true); // junta erros do Python na mesma saída
+                construtor.redirectErrorStream(true);
                 Process processo = construtor.start();
 
                 try (OutputStream entrada = processo.getOutputStream()) {
@@ -46,12 +37,11 @@ public class GraficosPython {
                 if (codigo == 0) {
                     return true;
                 }
-                // falhou com este comando (ex: atalho da Microsoft Store, ou biblioteca faltando):
-                // mostra o motivo e tenta o próximo nome
+
                 System.err.println("Falha ao executar '" + comando + "' (código " + codigo + "):\n" + saida);
 
             } catch (IOException e) {
-                // comando não encontrado neste nome: tenta o próximo
+
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
@@ -96,7 +86,6 @@ public class GraficosPython {
         return sb.toString();
     }
 
-    /** Converte um texto Java em string JSON (com aspas e caracteres especiais escapados). */
     private static String texto(String valor) {
         if (valor == null) return "\"\"";
         StringBuilder sb = new StringBuilder("\"");

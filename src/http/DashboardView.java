@@ -21,10 +21,6 @@ public class DashboardView {
     private static final Locale BR = Locale.forLanguageTag("pt-BR");
     private static final DateTimeFormatter DIA_MES = DateTimeFormatter.ofPattern("dd/MM");
 
-    /**
-     * @param graficosPython true se o script Python gerou as imagens PNG;
-     *                       false usa os gráficos SVG feitos em Java como alternativa
-     */
     public static String pagina(List<FaturamentoDTO> faturamento,
                                 List<TopProdutosDTO> topProdutos,
                                 List<BaristasDestaqueDTO> baristas,
@@ -50,9 +46,7 @@ public class DashboardView {
         return sb.toString();
     }
 
-    // ---------- Consulta 1: faturamento por dia e forma de pagamento ----------
     private static String secaoFaturamento(List<FaturamentoDTO> faturamento, boolean python) {
-        // agrega os resultados da consulta para montar os gráficos SVG (alternativa ao Python)
         Map<String, Double> porForma = new TreeMap<>();
         Map<LocalDate, Double> porDia = new TreeMap<>();
         for (FaturamentoDTO f : faturamento) {
@@ -96,7 +90,6 @@ public class DashboardView {
         return sb.toString();
     }
 
-    // ---------- Consulta 2: top 10 produtos mais vendidos ----------
     private static String secaoTopProdutos(List<TopProdutosDTO> topProdutos, boolean python) {
         List<String> rotulos = new ArrayList<>();
         List<Double> valores = new ArrayList<>();
@@ -123,7 +116,6 @@ public class DashboardView {
                 + "</div>";
     }
 
-    // ---------- Consulta 3: baristas acima da média ----------
     private static String secaoBaristas(List<BaristasDestaqueDTO> baristas, boolean python) {
         List<String> rotulos = new ArrayList<>();
         List<Double> valores = new ArrayList<>();
@@ -148,7 +140,6 @@ public class DashboardView {
                 + "</div>";
     }
 
-    // ---------- Consulta 4: cafés, grãos e fornecedores ----------
     private static String secaoCafes(List<CafesEGraosDTO> cafes) {
         StringBuilder tabela = new StringBuilder(
                 "<table><tr><th>Café</th><th>Grão</th><th>Origem</th><th>Fornecedor</th><th>Preço/kg</th></tr>");
@@ -170,12 +161,8 @@ public class DashboardView {
                 + "</div>";
     }
 
-    // ---------- auxiliares ----------
-
-    /** Mostra a imagem gerada pelo Python ou, se não houver, o gráfico SVG feito em Java. */
     private static String grafico(boolean python, String arquivoPng, String descricao, Supplier<String> svg) {
         if (python) {
-            // o parâmetro ?v= evita que o navegador mostre uma versão antiga em cache
             return "<img src=\"/graficos/" + arquivoPng + "?v=" + System.currentTimeMillis()
                     + "\" alt=\"" + escapar(descricao) + "\" style=\"max-width:100%\">";
         }
