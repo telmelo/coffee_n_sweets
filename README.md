@@ -100,4 +100,4 @@ Coffee N' Sweets é um projeto de código open-source desenvolvido por
 - Ian Felipe (AnzinFelipe)
 - Thiago Neiva (neivals)
 - Rafael Barboza (RafaCapetta) 
-- Guilherme Rapela Medeiros
+- Guilherme Rapela Medeiros (Guilherme-Rapela-Medeiros)
