@@ -23,6 +23,7 @@ public class Layout {
                         <a href="/clientes">Clientes</a>
                         <a href="/produtos">Produtos</a>
                         <a href="/mesas">Mesas</a>
+                        <a href="/funcionarios">Funcionários</a>
                         <a href="/dashboard">Dashboard</a>
                       </nav>
                     </div>
