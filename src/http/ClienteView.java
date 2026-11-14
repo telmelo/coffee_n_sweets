@@ -8,7 +8,6 @@ import static http.Html.escapar;
 
 public class ClienteView {
 
-    /** Lista de clientes, com mensagem de erro opcional (null se não houver). */
     public static String tabela(List<Cliente> clientes, String mensagemErro) {
         StringBuilder sb = new StringBuilder();
 
@@ -39,7 +38,6 @@ public class ClienteView {
         return sb.toString();
     }
 
-    /** Formulário de novo cliente (ID = 0) ou de edição (ID != 0). */
     public static String formulario(Cliente c, String mensagemErro) {
         StringBuilder sb = new StringBuilder();
 

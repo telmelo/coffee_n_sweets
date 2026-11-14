@@ -43,7 +43,6 @@ public class ClienteDAO {
         return lista;
     }
 
-    /** Busca um cliente pelo ID; devolve null se não existir. */
     public Cliente buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM Cliente WHERE ID_cliente=?";
         try (Connection conn = Conexao.getConexao();

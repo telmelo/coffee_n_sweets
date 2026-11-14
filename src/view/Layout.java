@@ -22,6 +22,7 @@ public class Layout {
                       <nav class="menu">
                         <a href="/clientes">Clientes</a>
                         <a href="/produtos">Produtos</a>
+                        <a href="/mesas">Mesas</a>
                         <a href="/dashboard">Dashboard</a>
                       </nav>
                     </div>

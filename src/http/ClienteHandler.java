@@ -15,14 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * Rotas de clientes:
- *   GET  /clientes          -> lista
- *   GET  /clientes/novo     -> formulário vazio
- *   GET  /clientes/editar   -> formulário preenchido (?id=)
- *   POST /clientes/salvar   -> insere (id = 0) ou atualiza (id != 0)
- *   POST /clientes/excluir  -> exclui
- */
 public class ClienteHandler implements HttpHandler {
     private final ClienteDAO clienteDAO = new ClienteDAO();
 
@@ -125,7 +117,6 @@ public class ClienteHandler implements HttpHandler {
         Formulario.redirecionar(troca, "/clientes");
     }
 
-    /** Devolve a mensagem de erro, ou null se o cliente for válido. */
     private String validar(Cliente c) {
         if (c.getNome().isBlank()) return "O nome não pode ser vazio.";
         if (c.getNome().length() > 40) return "O nome não pode ter mais de 40 caracteres.";

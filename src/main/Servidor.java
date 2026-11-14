@@ -14,6 +14,7 @@ import http.ArquivoEstaticoHandler;
 import http.ClienteHandler;
 import http.DashboardHandler;
 import http.ProdutoHandler;
+import http.MesaHandler;
 
 
 public class Servidor {
@@ -22,6 +23,7 @@ public class Servidor {
 
         servidor.createContext("/clientes", new ClienteHandler());
         servidor.createContext("/produtos", new ProdutoHandler());
+        servidor.createContext("/mesas", new MesaHandler());
         servidor.createContext("/dashboard", new DashboardHandler());
         servidor.createContext("/graficos", new ArquivoEstaticoHandler("/graficos", Path.of("graficos_gerados")));
         servidor.setExecutor(null);
