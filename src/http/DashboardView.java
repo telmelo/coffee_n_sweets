@@ -1,9 +1,6 @@
 package http;
 
-import dto.BaristasDestaqueDTO;
-import dto.CafesEGraosDTO;
-import dto.FaturamentoDTO;
-import dto.TopProdutosDTO;
+import dto.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +22,10 @@ public class DashboardView {
                                 List<TopProdutosDTO> topProdutos,
                                 List<BaristasDestaqueDTO> baristas,
                                 List<CafesEGraosDTO> cafes,
+                                List<ProdutosNaoVendidosDTO> naoVendidos,
+                                List<RelacaoMesaPedidoDTO> mesaPedido,
+                                List<ClienteUltimoPedidoDTO> ultimoPedido,
+                                List<ClienteCafeSemLancheDTO> cafeSemLanche,
                                 int totalClientes,
                                 int totalProdutos,
                                 boolean graficosPython) {
@@ -43,6 +44,11 @@ public class DashboardView {
         sb.append(secaoTopProdutos(topProdutos, graficosPython));
         sb.append(secaoBaristas(baristas, graficosPython));
         sb.append(secaoCafes(cafes));
+
+        sb.append(secaoProdutosNaoVendidos(naoVendidos));
+        sb.append(secaoMesaPedido(mesaPedido));
+        sb.append(secaoUltimoPedido(ultimoPedido));
+        sb.append(secaoCafeSemLanche(cafeSemLanche));
         return sb.toString();
     }
 
@@ -161,6 +167,109 @@ public class DashboardView {
                 + "</div>";
     }
 
+    private static String secaoProdutosNaoVendidos(List<ProdutosNaoVendidosDTO> produtos) {
+        String conteudo;
+        if (produtos.isEmpty()) {
+            conteudo = vazio("Todos os produtos já foram vendidos pelo menos uma vez.");
+        } else {
+            StringBuilder tabela = new StringBuilder("<table><tr><th>Produto</th><th>Preço</th></tr>");
+            for (ProdutosNaoVendidosDTO p : produtos) {
+                tabela.append("<tr><td>").append(escapar(p.getNome())).append("</td>")
+                        .append("<td>").append(moeda(p.getPreco())).append("</td></tr>");
+            }
+            tabela.append("</table>");
+            conteudo = detalhes("Ver tabela (" + produtos.size() + " produtos)", tabela.toString());
+        }
+
+        return "<div class=\"secao\">"
+                + "<h2>Produtos nunca vendidos</h2>"
+                + "<p class=\"consulta\">Consulta: LEFT JOIN (Produto × Item_pedido) filtrando IS NULL</p>"
+                + conteudo
+                + "</div>";
+    }
+
+    private static String secaoMesaPedido(List<RelacaoMesaPedidoDTO> linhas) {
+        String conteudo;
+        if (linhas.isEmpty()) {
+            conteudo = vazio("Nenhuma mesa ou pedido encontrado.");
+        } else {
+            StringBuilder tabela = new StringBuilder(
+                    "<table><tr><th>Mesa</th><th>Localização</th><th>Pedido</th><th>Data</th><th>Valor total</th></tr>");
+            for (RelacaoMesaPedidoDTO r : linhas) {
+                // pedido sem mesa e mesa sem pedido chegam com campos nulos
+                String mesa = r.getNumeroMesa() == null ? "Sem mesa" : String.valueOf(r.getNumeroMesa());
+                String localizacao = r.getLocalizacao() == null ? "—" : r.getLocalizacao();
+                String pedido = r.getIDPagamento() == null ? "Sem pedidos" : "#" + r.getIDPagamento();
+                String data = r.getData() == null ? "—" : r.getData().toString();
+                String valor = r.getValorTotal() == null ? "—" : moeda(r.getValorTotal());
+
+                tabela.append("<tr>")
+                        .append("<td>").append(escapar(mesa)).append("</td>")
+                        .append("<td>").append(escapar(localizacao)).append("</td>")
+                        .append("<td>").append(escapar(pedido)).append("</td>")
+                        .append("<td>").append(data).append("</td>")
+                        .append("<td>").append(valor).append("</td>")
+                        .append("</tr>");
+            }
+            tabela.append("</table>");
+            conteudo = detalhes("Ver tabela", tabela.toString());
+        }
+
+        return "<div class=\"secao\">"
+                + "<h2>Mesas e seus pedidos</h2>"
+                + "<p class=\"consulta\">Consulta: LEFT JOIN + RIGHT JOIN com UNION (Mesa × Pedido_pagamento), incluindo mesas sem pedidos e pedidos sem mesa</p>"
+                + conteudo
+                + "</div>";
+    }
+
+    private static String secaoUltimoPedido(List<ClienteUltimoPedidoDTO> clientes) {
+        String conteudo;
+        if (clientes.isEmpty()) {
+            conteudo = vazio("Nenhum cliente com pedidos registrados.");
+        } else {
+            StringBuilder tabela = new StringBuilder(
+                    "<table><tr><th>Cliente</th><th>Último pedido</th><th>Data</th><th>Pagamento</th><th>Dias sem comprar</th></tr>");
+            for (ClienteUltimoPedidoDTO c : clientes) {
+                tabela.append("<tr>")
+                        .append("<td>").append(escapar(c.getNome())).append("</td>")
+                        .append("<td>#").append(c.getIDPagamento()).append("</td>")
+                        .append("<td>").append(c.getDataUltimoPedido()).append("</td>")
+                        .append("<td>").append(escapar(c.getFormaPagamento())).append("</td>")
+                        .append("<td>").append(c.getDiasSemComprar()).append("</td>")
+                        .append("</tr>");
+            }
+            tabela.append("</table>");
+            conteudo = detalhes("Ver tabela (" + clientes.size() + " registros)", tabela.toString());
+        }
+
+        return "<div class=\"secao\">"
+                + "<h2>Último pedido de cada cliente</h2>"
+                + "<p class=\"consulta\">Consulta: JOIN (Pedido_pagamento × Cliente) + subconsulta correlacionada com MAX(data) + DATEDIFF</p>"
+                + conteudo
+                + "</div>";
+    }
+
+    private static String secaoCafeSemLanche(List<ClienteCafeSemLancheDTO> clientes) {
+        String conteudo;
+        if (clientes.isEmpty()) {
+            conteudo = vazio("Nenhum cliente comprou café sem nunca ter comprado lanche.");
+        } else {
+            StringBuilder tabela = new StringBuilder("<table><tr><th>Cliente</th><th>E-mail</th></tr>");
+            for (ClienteCafeSemLancheDTO c : clientes) {
+                tabela.append("<tr><td>").append(escapar(c.getNome())).append("</td>")
+                        .append("<td>").append(escapar(c.getEmail())).append("</td></tr>");
+            }
+            tabela.append("</table>");
+            conteudo = detalhes("Ver tabela (" + clientes.size() + " clientes)", tabela.toString());
+        }
+
+        return "<div class=\"secao\">"
+                + "<h2>Clientes que compram café e nunca compraram lanche</h2>"
+                + "<p class=\"consulta\">Consulta: EXISTS (pedidos com Cafe) + NOT EXISTS (pedidos com Lanche)</p>"
+                + conteudo
+                + "</div>";
+    }
+
     private static String grafico(boolean python, String arquivoPng, String descricao, Supplier<String> svg) {
         if (python) {
             return "<img src=\"/graficos/" + arquivoPng + "?v=" + System.currentTimeMillis()
@@ -176,6 +285,10 @@ public class DashboardView {
 
     private static String detalhes(String resumo, String conteudo) {
         return "<details open><summary>" + escapar(resumo) + "</summary>" + conteudo + "</details>";
+    }
+
+    private static String vazio(String mensagem) {
+        return "<p>" + escapar(mensagem) + "</p>";
     }
 
     private static String moeda(double valor) {

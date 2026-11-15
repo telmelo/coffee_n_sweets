@@ -5,10 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import dao.ClienteDAO;
 import dao.ConsultasDAO;
 import dao.ProdutoDAO;
-import dto.BaristasDestaqueDTO;
-import dto.CafesEGraosDTO;
-import dto.FaturamentoDTO;
-import dto.TopProdutosDTO;
+import dto.*;
 import util.Resposta;
 import view.Layout;
 
@@ -37,10 +34,16 @@ public class DashboardHandler implements HttpHandler {
             List<BaristasDestaqueDTO> baristas = consultasDAO.baristasAcimaDaMedia();
             List<CafesEGraosDTO> cafes = consultasDAO.cafesEGraos();
 
+            List<ProdutosNaoVendidosDTO> naoVendidos = consultasDAO.produtosNaoVendidos();
+            List<RelacaoMesaPedidoDTO> mesaPedido = consultasDAO.relacaoMesaPedido();
+            List<ClienteUltimoPedidoDTO> ultimoPedido = consultasDAO.clientesUltimoPedido();
+            List<ClienteCafeSemLancheDTO> cafeSemLanche = consultasDAO.clientesCafeSemLanche();
+
             boolean graficosPython = GraficosPython.gerar(faturamento, topProdutos, baristas);
 
             String html = DashboardView.pagina(
                     faturamento, topProdutos, baristas, cafes,
+                    naoVendidos, mesaPedido, ultimoPedido, cafeSemLanche,
                     clienteDAO.listar().size(),
                     produtoDAO.listar().size(),
                     graficosPython
