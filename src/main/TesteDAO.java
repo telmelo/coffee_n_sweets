@@ -1,13 +1,15 @@
 package main;
 
-import dao.ClienteDAO;
-import dao.ProdutoDAO;
-import model.Cliente;
-import model.Produto;
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+
+import dao.ClienteDAO;
+import dao.EstatisticasDAO;
+import dao.ProdutoDAO;
+import dto.EstatisticasDTO;
+import model.Cliente;
+import model.Produto;
 
 public class TesteDAO {
     public static void main(String[] args) {
@@ -61,6 +63,16 @@ public class TesteDAO {
 
             produtoDAO.excluir(novoProduto.getIDProduto());
             System.out.println("\nProduto excluído!");
+
+            EstatisticasDAO dao = new EstatisticasDAO();
+            List<EstatisticasDTO> lista = dao.calcular();
+            EstatisticasDTO e = lista.get(0);
+
+            System.out.println("Quantidade: " + e.getQuantidade());
+            System.out.println("Média: "      + e.getMedia());
+            System.out.println("Desvio: "     + e.getDesvioPadrao());
+            System.out.println("Variância: "  + e.getVariancia());
+            System.out.println("Moda: "       + e.getModa());
 
         } catch (SQLException e) {
             System.out.println("Erro no teste: " + e.getMessage());
