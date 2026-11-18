@@ -16,6 +16,7 @@ import dto.ClienteCafeSemLancheDTO;
 import dto.ClienteUltimoPedidoDTO;
 import dto.EstatisticasDTO;
 import dto.FaturamentoDTO;
+import dto.HistogramaDTO;
 import dto.ProdutosNaoVendidosDTO;
 import dto.RelacaoMesaPedidoDTO;
 import dto.TopProdutosDTO;
@@ -34,6 +35,7 @@ public class DashboardView {
                                 List<ClienteUltimoPedidoDTO> ultimoPedido,
                                 List<ClienteCafeSemLancheDTO> cafeSemLanche,
                                 List<EstatisticasDTO> estatisticas,
+                                List<HistogramaDTO> histograma,
                                 int totalClientes,
                                 int totalProdutos,
                                 boolean graficosPython) {
@@ -57,6 +59,7 @@ public class DashboardView {
 
         sb.append(secaoFaturamento(faturamento, graficosPython));
         sb.append(secaoTopProdutos(topProdutos, graficosPython));
+        sb.append(secaoHistograma(histograma));
         sb.append(secaoBaristas(baristas, graficosPython));
         sb.append(secaoCafes(cafes));
 
@@ -320,5 +323,28 @@ public class DashboardView {
                 + "details{margin-top:12px}"
                 + "summary{cursor:pointer;color:#c2306a}"
                 + "</style>";
+    }
+
+    private static String secaoHistograma(List<HistogramaDTO> histograma) {
+        List<String> rotulos = new ArrayList<>();
+        List<Double> valores = new ArrayList<>();
+        for (HistogramaDTO h : histograma) {
+            rotulos.add(h.getFaixa());
+            valores.add((double) h.getQuantidade());
+        }
+
+        StringBuilder tabela = new StringBuilder("<table><tr><th>Faixa de valor</th><th>Pedidos</th></tr>");
+        for (HistogramaDTO h : histograma) {
+            tabela.append("<tr><td>").append(escapar(h.getFaixa())).append("</td>")
+                    .append("<td>").append(h.getQuantidade()).append("</td></tr>");
+        }
+        tabela.append("</table>");
+
+        return "<div class=\"secao\">"
+                + "<h2>Distribuição dos pedidos por faixa de valor</h2>"
+                + "<p class=\"consulta\">Consulta: CASE WHEN para criar faixas + COUNT + GROUP BY</p>"
+                + Graficos.barrasVerticais(rotulos, valores, v -> String.valueOf((int) v))
+                + detalhes("Ver tabela", tabela.toString())
+                + "</div>";
     }
 }
