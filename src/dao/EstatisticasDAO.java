@@ -21,8 +21,14 @@ public class EstatisticasDAO {
                  "group by Forma_pagamento order by count(*) desc limit 1";
         double mediana = 0;
         String sqlMediana = """
-                select distinct median(Valor_total) over () as Mediana
-                from Pedido_pagamento
+                select avg(Valor_total) as Mediana
+                    from (
+                        select Valor_total,
+                               row_number() over (order by Valor_total) as rn,
+                               count(*)     over ()                     as total
+                        from Pedido_pagamento
+                    ) t
+                where rn in (floor((total + 1) / 2), ceil((total + 1) / 2))
                 """;
 
         try (Connection conn = Conexao.getConexao();
