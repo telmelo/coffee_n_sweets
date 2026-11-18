@@ -17,6 +17,7 @@ import dto.ClienteUltimoPedidoDTO;
 import dto.EstatisticasDTO;
 import dto.FaturamentoDTO;
 import dto.HistogramaDTO;
+import dto.LogPrecoDTO;
 import dto.ProdutosNaoVendidosDTO;
 import dto.RelacaoMesaPedidoDTO;
 import dto.TopProdutosDTO;
@@ -25,6 +26,7 @@ import static http.Html.escapar;
 public class DashboardView {
     private static final Locale BR = Locale.forLanguageTag("pt-BR");
     private static final DateTimeFormatter DIA_MES = DateTimeFormatter.ofPattern("dd/MM");
+    private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public static String pagina(List<FaturamentoDTO> faturamento,
                                 List<TopProdutosDTO> topProdutos,
@@ -36,6 +38,7 @@ public class DashboardView {
                                 List<ClienteCafeSemLancheDTO> cafeSemLanche,
                                 List<EstatisticasDTO> estatisticas,
                                 List<HistogramaDTO> histograma,
+                                List<LogPrecoDTO> logsPreco,
                                 int totalClientes,
                                 int totalProdutos,
                                 boolean graficosPython) {
@@ -65,6 +68,7 @@ public class DashboardView {
 
         sb.append(secaoProdutosNaoVendidos(naoVendidos));
         sb.append(secaoMesaPedido(mesaPedido));
+        sb.append(secaoLogPreco(logsPreco));
         sb.append(secaoUltimoPedido(ultimoPedido));
         sb.append(secaoCafeSemLanche(cafeSemLanche));
         return sb.toString();
@@ -345,6 +349,33 @@ public class DashboardView {
                 + "<p class=\"consulta\">Consulta: CASE WHEN para criar faixas + COUNT + GROUP BY</p>"
                 + Graficos.barrasVerticais(rotulos, valores, v -> String.valueOf((int) v))
                 + detalhes("Ver tabela", tabela.toString())
+                + "</div>";
+    }
+
+    private static String secaoLogPreco(List<LogPrecoDTO> logs) {
+        String conteudo;
+        if (logs.isEmpty()) {
+            conteudo = vazio("Nenhuma alteração de preço registrada até o momento.");
+        } else {
+            StringBuilder tabela = new StringBuilder(
+                    "<table><tr><th>Produto</th><th>De</th><th>Para</th><th>Quando</th><th>Usuário</th></tr>");
+            for (LogPrecoDTO l : logs) {
+                tabela.append("<tr>")
+                        .append("<td>").append(escapar(l.getNomeProduto())).append("</td>")
+                        .append("<td>").append(moeda(l.getPrecoAntigo())).append("</td>")
+                        .append("<td>").append(moeda(l.getPrecoNovo())).append("</td>")
+                        .append("<td>").append(DATA_HORA.format(l.getDataAlteracao())).append("</td>")
+                        .append("<td>").append(escapar(l.getUsuario())).append("</td>")
+                        .append("</tr>");
+            }
+            tabela.append("</table>");
+            conteudo = detalhes("Ver histórico (" + logs.size() + " alterações)", tabela.toString());
+        }
+
+        return "<div class=\"secao\">"
+                + "<h2>Histórico de alterações de preço</h2>"
+                + "<p class=\"consulta\">Alimentada pelo trigger trg_logspreco (AFTER UPDATE ON Produto)</p>"
+                + conteudo
                 + "</div>";
     }
 }

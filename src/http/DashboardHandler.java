@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpHandler;
 import dao.ClienteDAO;
 import dao.ConsultasDAO;
 import dao.EstatisticasDAO;
+import dao.LogPrecoDAO;
 import dao.ProdutoDAO;
 import dto.BaristasDestaqueDTO;
 import dto.CafesEGraosDTO;
@@ -18,6 +19,7 @@ import dto.ClienteUltimoPedidoDTO;
 import dto.EstatisticasDTO;
 import dto.FaturamentoDTO;
 import dto.HistogramaDTO;
+import dto.LogPrecoDTO;
 import dto.ProdutosNaoVendidosDTO;
 import dto.RelacaoMesaPedidoDTO;
 import dto.TopProdutosDTO;
@@ -29,6 +31,7 @@ public class DashboardHandler implements HttpHandler {
     private final ClienteDAO clienteDAO = new ClienteDAO();
     private final ProdutoDAO produtoDAO = new ProdutoDAO();
     private final EstatisticasDAO estatisticasDAO = new EstatisticasDAO();
+    private final LogPrecoDAO logPrecoDAO = new LogPrecoDAO();
 
     @Override
     public void handle(HttpExchange troca) throws IOException {
@@ -47,6 +50,8 @@ public class DashboardHandler implements HttpHandler {
             List<CafesEGraosDTO> cafes = consultasDAO.cafesEGraos();
             List<EstatisticasDTO> estatisticas = estatisticasDAO.calcular();
             List<HistogramaDTO> histograma = estatisticasDAO.histogramaValores();
+            List<LogPrecoDTO> logsPreco = logPrecoDAO.listarAlteracoesPreco();
+
 
             List<ProdutosNaoVendidosDTO> naoVendidos = consultasDAO.produtosNaoVendidos();
             List<RelacaoMesaPedidoDTO> mesaPedido = consultasDAO.relacaoMesaPedido();
@@ -60,6 +65,7 @@ public class DashboardHandler implements HttpHandler {
                     naoVendidos, mesaPedido, ultimoPedido, cafeSemLanche,
                     estatisticas,
                     histograma,
+                    logsPreco,
                     clienteDAO.listar().size(),
                     produtoDAO.listar().size(),
                     graficosPython
