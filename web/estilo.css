@@ -120,9 +120,20 @@ p {
   color: #fff;
   text-shadow: 2px 2px 0 var(--rosa-escuro);
   white-space: nowrap;
+  transition: text-shadow 0.6s ease;
+}
+
+/* letreiro em neon: acende uma vez na abertura e fica com brilho suave */
+.marca.acesa {
+  text-shadow:
+    2px 2px 0 var(--rosa-escuro),
+    0 0 10px rgba(255, 214, 231, 0.55),
+    0 0 26px rgba(224, 69, 123, 0.85),
+    0 0 46px rgba(224, 69, 123, 0.45);
 }
 
 .marca-icone {
+  position: relative;
   display: grid;
   place-items: center;
   width: 40px;
@@ -135,12 +146,15 @@ p {
 }
 
 .menu {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
 
 .menu a {
+  position: relative;
+  z-index: 1;
   padding: 7px 16px;
   border-radius: 999px;
   font-weight: 700;
@@ -503,6 +517,7 @@ textarea {
 /* cada número é uma etiqueta de preço pendurada */
 .conteudo .cartao {
   position: relative;
+  container-type: inline-size;
   min-width: 0;
   padding: 20px 24px 22px 40px;
   border: 2px solid var(--framboesa);
@@ -539,11 +554,12 @@ textarea {
 .conteudo .cartao .valor {
   margin-top: 2px;
   font-family: var(--fonte-titulo);
-  font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+  font-size: clamp(1.5rem, 19cqi, 2.4rem);
   font-weight: 400;
   line-height: 1.15;
   color: var(--framboesa);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .conteudo .secao {
@@ -801,4 +817,358 @@ textarea {
 
 .form-linha .campo {
   margin: 0;
+}
+
+/* =====================================================================
+   Vida na vitrine — camada de movimento e interação.
+   Tudo abaixo complementa as regras acima; o app.js (com GSAP) cuida
+   da abertura da loja, dos números e dos gráficos.
+   ===================================================================== */
+
+:root {
+  interpolate-size: allow-keywords;   /* permite animar até height:auto */
+  --mola: cubic-bezier(0.3, 1.45, 0.5, 1);
+}
+
+/* ---------- Navegação entre páginas: o topo fica, o conteúdo troca ---------- */
+@view-transition {
+  navigation: auto;
+}
+
+.topo {
+  view-transition-name: topo;
+}
+
+::view-transition-old(root) {
+  animation: vt-sair 0.18s ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: vt-entrar 0.32s ease-out both;
+}
+
+::view-transition-group(marcador) {
+  animation-duration: 0.5s;
+  animation-timing-function: var(--mola);
+}
+
+@keyframes vt-sair {
+  to { opacity: 0; transform: translateY(6px); }
+}
+
+@keyframes vt-entrar {
+  from { opacity: 0; transform: translateY(-6px); }
+}
+
+/* o toldo só desenrola na primeira página; depois ele já está aberto */
+.ja-aberta .cabecalho::before,
+.ja-aberta .cabecalho::after {
+  animation: none;
+}
+
+/* com o GSAP presente, as letras do título fazem a entrada no lugar do CSS */
+.anima .cabecalho h1 {
+  animation: none;
+}
+
+.cabecalho .palavra {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.cabecalho .letra {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ---------- Letreiro: vapor saindo da xícara ao passar o mouse ---------- */
+.marca-icone::before,
+.marca-icone::after {
+  content: "";
+  position: absolute;
+  bottom: 70%;
+  width: 4px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(transparent, rgba(255, 214, 231, 0.9));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.marca-icone::before { left: 13px; }
+.marca-icone::after  { left: 21px; }
+
+.marca:hover .marca-icone::before {
+  animation: vapor 1.4s ease-out infinite;
+}
+
+.marca:hover .marca-icone::after {
+  animation: vapor 1.4s 0.5s ease-out infinite;
+}
+
+@keyframes vapor {
+  0%   { opacity: 0; transform: translateY(4px) scaleY(0.6); }
+  30%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(3px, -16px) scaleY(1.2) rotate(12deg); }
+}
+
+/* ---------- Menu: marcador que desliza até o link ---------- */
+.menu-marcador {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: 999px;
+  background: var(--rosa-claro);
+  box-shadow: 0 3px 0 var(--rosa-choque);
+  opacity: 0;
+  pointer-events: none;
+  view-transition-name: marcador;
+}
+
+.menu-marcador.pronto {
+  transition:
+    transform 0.45s var(--mola),
+    width 0.45s var(--mola),
+    opacity 0.2s;
+}
+
+.menu.com-marcador a:hover {
+  background: transparent;
+  color: var(--rosa-bebe);
+}
+
+.menu.com-marcador a.sob-marcador {
+  color: var(--framboesa);
+}
+
+/* ---------- Topo: ganha uma faixa de toldo quando o título sai da tela ---------- */
+.topo::after {
+  --l: 18px;
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: var(--l);
+  background: repeating-linear-gradient(90deg,
+    var(--rosa-choque) 0 var(--l),
+    #fff var(--l) calc(var(--l) * 2));
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--l) / 2) no-repeat,
+    radial-gradient(circle calc(var(--l) / 2) at 50% 0, #000 98%, transparent 100%)
+      bottom / var(--l) calc(var(--l) / 2) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--l) / 2) no-repeat,
+    radial-gradient(circle calc(var(--l) / 2) at 50% 0, #000 98%, transparent 100%)
+      bottom / var(--l) calc(var(--l) / 2) repeat-x;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.4s var(--mola);
+  pointer-events: none;
+}
+
+.topo.rolou::after {
+  transform: scaleY(1);
+}
+
+/* ---------- Botões: um pouco mais de mola ---------- */
+.botao,
+button {
+  transition:
+    transform 0.25s var(--mola),
+    box-shadow 0.25s var(--mola),
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+
+/* enviando: três pontinhos de confeito no lugar da espera muda */
+.enviando {
+  pointer-events: none;
+}
+
+.enviando::after {
+  content: "";
+  width: 1.2em;
+  height: 0.3em;
+  margin-left: 4px;
+  background:
+    radial-gradient(circle closest-side, currentColor 90%, transparent) 0 50% / 0.3em 0.3em no-repeat,
+    radial-gradient(circle closest-side, currentColor 90%, transparent) 50% 50% / 0.3em 0.3em no-repeat,
+    radial-gradient(circle closest-side, currentColor 90%, transparent) 100% 50% / 0.3em 0.3em no-repeat;
+  animation: pontinhos 0.9s steps(4) infinite;
+}
+
+@keyframes pontinhos {
+  0%   { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 -10% 0 0); }
+}
+
+/* ---------- Tabelas: a linha sob o mouse ganha a fitinha da framboesa ---------- */
+.tabela-caixa tr td:first-child {
+  box-shadow: inset 0 0 0 var(--rosa-choque);
+  transition: box-shadow 0.25s var(--mola), background-color 0.2s;
+}
+
+.tabela-caixa tr:hover td:first-child {
+  box-shadow: inset 5px 0 0 var(--rosa-choque);
+}
+
+/* status de pedido em selos (montados pelo app.js) */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 12px 3px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-pendente {
+  background: var(--rosa-bebe);
+  color: var(--rosa-escuro);
+}
+
+.status-preparo {
+  background: var(--azul-ceu);
+  color: var(--azul-tinta);
+}
+
+/* o pontinho pulsa: é o único estado que está acontecendo agora */
+.status-preparo::before {
+  animation: pulsar 1.6s ease-out infinite;
+}
+
+.status-pronto {
+  background: #dff5e6;
+  color: #1f7a45;
+}
+
+@keyframes pulsar {
+  0%   { box-shadow: 0 0 0 0 rgba(47, 93, 124, 0.55); }
+  100% { box-shadow: 0 0 0 7px rgba(47, 93, 124, 0); }
+}
+
+/* ---------- Dashboard: etiquetas que balançam no furinho ---------- */
+.conteudo .cartoes.prontos .cartao {
+  transform-origin: 18px 50%;
+  transition: transform 0.6s var(--mola), box-shadow 0.3s;
+}
+
+.conteudo .cartoes.prontos .cartao:hover {
+  transform: rotate(-3deg) translateY(-2px);
+  box-shadow: 9px 9px 0 var(--framboesa);
+}
+
+/* barras em degradê (o #id vem do app.js; sem ele, volta à cor lisa) */
+.conteudo .secao svg rect {
+  fill: url(#cns-barra) var(--rosa-choque);
+  transition: fill 0.2s, filter 0.2s;
+  cursor: pointer;
+}
+
+.conteudo .secao svg.grafico-h rect {
+  fill: url(#cns-barra-h) var(--rosa-choque);
+}
+
+.conteudo .secao svg rect:hover,
+.conteudo .secao svg rect:focus-visible {
+  fill: var(--framboesa);
+  filter: drop-shadow(3px 3px 0 var(--rosa-bebe));
+  outline: none;
+}
+
+.conteudo .secao svg polyline {
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.conteudo .secao svg .area {
+  fill: url(#cns-area);
+  stroke: none;
+}
+
+.conteudo .secao svg circle {
+  stroke: #fff;
+  stroke-width: 2;
+  cursor: pointer;
+  transition: r 0.25s var(--mola), fill 0.2s;
+}
+
+.conteudo .secao svg circle:hover,
+.conteudo .secao svg circle:focus-visible {
+  r: 7;
+  outline: none;
+}
+
+/* dica dos gráficos */
+.dica {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  padding: 7px 14px;
+  border: 2px solid var(--framboesa);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--framboesa);
+  color: var(--framboesa);
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.9;
+  transition: opacity 0.15s, scale 0.2s var(--mola);
+}
+
+.dica.visivel {
+  opacity: 1;
+  scale: 1;
+}
+
+/* tabelas recolhíveis abrem e fecham deslizando */
+.conteudo details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 0.4s ease, content-visibility 0.4s allow-discrete;
+}
+
+.conteudo details[open]::details-content {
+  block-size: auto;
+}
+
+/* ---------- Granulado da confirmação ---------- */
+.granulado {
+  position: fixed;
+  z-index: 60;
+  width: 10px;
+  height: 4px;
+  border-radius: 2px;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(122, 31, 75, 0.12);
+}
+
+@media (max-width: 760px) {
+  .topo::after {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
 }

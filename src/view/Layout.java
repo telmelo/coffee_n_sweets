@@ -14,6 +14,15 @@ public class Layout {
                   <meta name="viewport" content="width=device-width, initial-scale=1">
                   <title>%s</title>
                   <style>%s</style>
+                  <script>
+                    try {
+                      if (sessionStorage.getItem("cns-aberta")) document.documentElement.classList.add("ja-aberta");
+                      sessionStorage.setItem("cns-aberta", "1");
+                    } catch (e) {}
+                  </script>
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+                  <script>if (window.gsap) document.documentElement.classList.add("anima");</script>
                 </head>
                 <body>
                   <header class="topo">
@@ -34,9 +43,19 @@ public class Layout {
                   %s
                   </main>
                   <footer class="rodape">♡ Coffee n' Sweets · feito com Java, MySQL, HTML, CSS e um pouco de açúcar ♡</footer>
+                  <script>%s</script>
                 </body>
                 </html>
-                """.formatted(titulo, estilo(), titulo, conteudo);
+                """.formatted(titulo, estilo(), titulo, conteudo, script());
+    }
+
+    /** Lê as animações e interações de web/app.js e embute no fim da página. */
+    private static String script() {
+        try {
+            return Files.readString(Path.of("web", "app.js"));
+        } catch (IOException e) {
+            return "";
+        }
     }
 
     /** Lê a folha de estilo de web/estilo.css e embute na página (não há rota para arquivos estáticos). */
