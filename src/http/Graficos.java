@@ -1,6 +1,7 @@
 package http;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.function.DoubleFunction;
 
 import static http.Html.escapar;
@@ -9,6 +10,16 @@ public class Graficos {
     private static final String COR_BARRA = "#e0457b";
     private static final String COR_TEXTO = "#444";
     private static final String COR_GRADE = "#ddd";
+    private static final String COR_FUNDO = "#fff";
+
+    // tons derivados de COR_BARRA, do mais escuro ao mais claro, para fatias de pizza
+    private static final String COR_FATIA_1 = "#8a1c47";
+    private static final String COR_FATIA_2 = COR_BARRA;
+    private static final String COR_FATIA_3 = "#f08cb0";
+    private static final String COR_FATIA_4 = "#f9d3e1";
+    private static final String[] PALETA_PIZZA = {COR_FATIA_1, COR_FATIA_2, COR_FATIA_3, COR_FATIA_4};
+
+    private static final Locale BR = Locale.forLanguageTag("pt-BR");
 
     public static String barrasHorizontais(List<String> rotulos, List<Double> valores, DoubleFunction<String> formato) {
         if (rotulos.isEmpty()) return "<p>Sem dados para exibir.</p>";
@@ -122,6 +133,80 @@ public class Graficos {
         sb.append(circulos);
         sb.append("</svg>");
         return sb.toString();
+    }
+
+    public static String pizza(List<String> rotulos, List<Double> valores, DoubleFunction<String> formato) {
+        if (rotulos.isEmpty()) return "<p>Sem dados para exibir.</p>";
+
+        double total = valores.stream().mapToDouble(Double::doubleValue).sum();
+        if (total <= 0) return "<p>Sem dados para exibir.</p>";
+
+        int raio = 110, cx = 130, cy = 130;
+        int legendaX = 290, alturaLinha = 28;
+        int largura = 560;
+        int altura = Math.max(2 * cy, rotulos.size() * alturaLinha + 20);
+
+        int fatiasNaoVazias = 0;
+        for (double v : valores) if (v > 0) fatiasNaoVazias++;
+
+        StringBuilder sb = abrirSvg(largura, altura);
+        double anguloInicial = -Math.PI / 2; // começa no topo e segue no sentido horário
+
+        for (int i = 0; i < rotulos.size(); i++) {
+            double valor = valores.get(i);
+            if (valor <= 0) continue;
+
+            String cor = PALETA_PIZZA[i % PALETA_PIZZA.length];
+            String dica = "<title>" + escapar(rotulos.get(i)) + ": " + escapar(formato.apply(valor))
+                    + " (" + escapar(percentual(valor, total)) + ")</title>";
+
+            if (fatiasNaoVazias == 1) {
+                // um arco de 360° tem início e fim no mesmo ponto e não é desenhado
+                sb.append("<circle cx=\"").append(cx).append("\" cy=\"").append(cy).append("\" r=\"").append(raio)
+                        .append("\" fill=\"").append(cor).append("\">").append(dica).append("</circle>");
+                continue;
+            }
+
+            double angulo = valor / total * 2 * Math.PI;
+            double anguloFinal = anguloInicial + angulo;
+            int arcoGrande = angulo > Math.PI ? 1 : 0;
+
+            sb.append("<path d=\"M ").append(cx).append(" ").append(cy)
+                    .append(" L ").append(coordenada(cx + raio * Math.cos(anguloInicial)))
+                    .append(" ").append(coordenada(cy + raio * Math.sin(anguloInicial)))
+                    .append(" A ").append(raio).append(" ").append(raio).append(" 0 ").append(arcoGrande).append(" 1 ")
+                    .append(coordenada(cx + raio * Math.cos(anguloFinal)))
+                    .append(" ").append(coordenada(cy + raio * Math.sin(anguloFinal)))
+                    .append(" Z\" fill=\"").append(cor).append("\" stroke=\"").append(COR_FUNDO)
+                    .append("\" stroke-width=\"2\">").append(dica).append("</path>");
+
+            anguloInicial = anguloFinal;
+        }
+
+        int topoLegenda = (altura - rotulos.size() * alturaLinha) / 2;
+        for (int i = 0; i < rotulos.size(); i++) {
+            double valor = valores.get(i);
+            int y = topoLegenda + i * alturaLinha;
+            sb.append("<rect x=\"").append(legendaX).append("\" y=\"").append(y + 4)
+                    .append("\" width=\"14\" height=\"14\" rx=\"2\" fill=\"")
+                    .append(PALETA_PIZZA[i % PALETA_PIZZA.length]).append("\" stroke=\"").append(COR_GRADE).append("\"/>");
+            sb.append("<text x=\"").append(legendaX + 22).append("\" y=\"").append(y + 16)
+                    .append("\" font-size=\"13\" fill=\"").append(COR_TEXTO).append("\">")
+                    .append(escapar(cortar(rotulos.get(i), 20))).append(" — ")
+                    .append(escapar(formato.apply(valor))).append(" (")
+                    .append(escapar(percentual(valor, total))).append(")</text>");
+        }
+
+        sb.append("</svg>");
+        return sb.toString();
+    }
+
+    static String percentual(double parte, double total) {
+        return String.format(BR, "%.1f%%", total == 0 ? 0 : parte / total * 100);
+    }
+
+    private static String coordenada(double valor) {
+        return String.format(Locale.ROOT, "%.2f", valor);
     }
 
 

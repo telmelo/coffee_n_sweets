@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 
 import dto.BaristasDestaqueDTO;
 import dto.CafesEGraosDTO;
+import dto.CategoriaClienteDTO;
 import dto.ClienteCafeSemLancheDTO;
 import dto.ClienteUltimoPedidoDTO;
 import dto.EstatisticasDTO;
@@ -39,6 +40,7 @@ public class DashboardView {
                                 List<EstatisticasDTO> estatisticas,
                                 List<HistogramaDTO> histograma,
                                 List<LogPrecoDTO> logsPreco,
+                                List<CategoriaClienteDTO> categorias,
                                 int totalClientes,
                                 int totalProdutos,
                                 boolean graficosPython) {
@@ -51,6 +53,7 @@ public class DashboardView {
         
         sb.append("<div class=\"cartoes\">");
         sb.append(cartao("Ticket médio", moeda(est.getMedia())));
+        sb.append(cartao("Mediana", moeda(est.getMediana())));
         sb.append(cartao("Desvio padrão", moeda(est.getDesvioPadrao())));
         sb.append(cartao("Variância", String.format("%.2f", est.getVariancia())));
         sb.append(cartao("Pagamento mais usado", est.getModa()));
@@ -65,6 +68,7 @@ public class DashboardView {
         sb.append(secaoHistograma(histograma));
         sb.append(secaoBaristas(baristas, graficosPython));
         sb.append(secaoCafes(cafes));
+        sb.append(secaoCategoriasCliente(categorias));
 
         sb.append(secaoProdutosNaoVendidos(naoVendidos));
         sb.append(secaoMesaPedido(mesaPedido));
@@ -376,6 +380,35 @@ public class DashboardView {
                 + "<h2>Histórico de alterações de preço</h2>"
                 + "<p class=\"consulta\">Alimentada pelo trigger trg_logspreco (AFTER UPDATE ON Produto)</p>"
                 + conteudo
+                + "</div>";
+    }
+
+    private static String secaoCategoriasCliente(List<CategoriaClienteDTO> categorias) {
+        List<String> rotulos = new ArrayList<>();
+        List<Double> valores = new ArrayList<>();
+        int total = 0;
+        for (CategoriaClienteDTO c : categorias) {
+            rotulos.add(c.getCategoria());
+            valores.add((double) c.getQuantidade());
+            total += c.getQuantidade();
+        }
+
+        StringBuilder tabela = new StringBuilder(
+                "<table><tr><th>Categoria</th><th>Clientes</th><th>Percentual</th></tr>");
+        for (CategoriaClienteDTO c : categorias) {
+            tabela.append("<tr><td>").append(escapar(c.getCategoria())).append("</td>")
+                    .append("<td>").append(c.getQuantidade()).append("</td>")
+                    .append("<td>").append(escapar(Graficos.percentual(c.getQuantidade(), total))).append("</td></tr>");
+        }
+        tabela.append("<tr><th>Total</th><th>").append(total).append("</th><th>")
+                .append(escapar(Graficos.percentual(total, total))).append("</th></tr>");
+        tabela.append("</table>");
+
+        return "<div class=\"secao\">"
+                + "<h2>Clientes por categoria de gasto</h2>"
+                + "<p class=\"consulta\">Alimentada pela função fn_categoria_cliente (Ouro, Prata, Bronze ou Novo conforme o gasto total) + COUNT + GROUP BY + ORDER BY FIELD</p>"
+                + Graficos.pizza(rotulos, valores, v -> String.valueOf((int) v))
+                + detalhes("Ver tabela", tabela.toString())
                 + "</div>";
     }
 }

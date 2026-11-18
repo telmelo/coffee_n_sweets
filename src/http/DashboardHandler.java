@@ -14,6 +14,7 @@ import dao.LogPrecoDAO;
 import dao.ProdutoDAO;
 import dto.BaristasDestaqueDTO;
 import dto.CafesEGraosDTO;
+import dto.CategoriaClienteDTO;
 import dto.ClienteCafeSemLancheDTO;
 import dto.ClienteUltimoPedidoDTO;
 import dto.EstatisticasDTO;
@@ -51,6 +52,7 @@ public class DashboardHandler implements HttpHandler {
             List<EstatisticasDTO> estatisticas = estatisticasDAO.calcular();
             List<HistogramaDTO> histograma = estatisticasDAO.histogramaValores();
             List<LogPrecoDTO> logsPreco = logPrecoDAO.listarAlteracoesPreco();
+            List<CategoriaClienteDTO> categorias = estatisticasDAO.distribuicaoCategorias();
 
 
             List<ProdutosNaoVendidosDTO> naoVendidos = consultasDAO.produtosNaoVendidos();
@@ -66,6 +68,7 @@ public class DashboardHandler implements HttpHandler {
                     estatisticas,
                     histograma,
                     logsPreco,
+                    categorias,
                     clienteDAO.listar().size(),
                     produtoDAO.listar().size(),
                     graficosPython
