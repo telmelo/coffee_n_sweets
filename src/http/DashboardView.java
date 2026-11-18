@@ -1,7 +1,5 @@
 package http;
 
-import dto.*;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,6 +10,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
+import dto.BaristasDestaqueDTO;
+import dto.CafesEGraosDTO;
+import dto.ClienteCafeSemLancheDTO;
+import dto.ClienteUltimoPedidoDTO;
+import dto.EstatisticasDTO;
+import dto.FaturamentoDTO;
+import dto.ProdutosNaoVendidosDTO;
+import dto.RelacaoMesaPedidoDTO;
+import dto.TopProdutosDTO;
 import static http.Html.escapar;
 
 public class DashboardView {
@@ -26,6 +33,7 @@ public class DashboardView {
                                 List<RelacaoMesaPedidoDTO> mesaPedido,
                                 List<ClienteUltimoPedidoDTO> ultimoPedido,
                                 List<ClienteCafeSemLancheDTO> cafeSemLanche,
+                                List<EstatisticasDTO> estatisticas,
                                 int totalClientes,
                                 int totalProdutos,
                                 boolean graficosPython) {
@@ -33,8 +41,15 @@ public class DashboardView {
         sb.append(estilo());
 
         double faturamentoTotal = faturamento.stream().mapToDouble(FaturamentoDTO::getFaturamento).sum();
+        EstatisticasDTO est = estatisticas.get(0);
 
+        
         sb.append("<div class=\"cartoes\">");
+        sb.append(cartao("Ticket médio", moeda(est.getMedia())));
+        sb.append(cartao("Desvio padrão", moeda(est.getDesvioPadrao())));
+        sb.append(cartao("Variância", String.format("%.2f", est.getVariancia())));
+        sb.append(cartao("Pagamento mais usado", est.getModa()));
+        sb.append(cartao("Pedidos registrados", String.valueOf(est.getQuantidade())));
         sb.append(cartao("Faturamento total", moeda(faturamentoTotal)));
         sb.append(cartao("Clientes cadastrados", String.valueOf(totalClientes)));
         sb.append(cartao("Produtos no cardápio", String.valueOf(totalProdutos)));

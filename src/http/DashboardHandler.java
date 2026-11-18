@@ -1,22 +1,33 @@
 package http;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import dao.ClienteDAO;
-import dao.ConsultasDAO;
-import dao.ProdutoDAO;
-import dto.*;
-import util.Resposta;
-import view.Layout;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import dao.ClienteDAO;
+import dao.ConsultasDAO;
+import dao.EstatisticasDAO;
+import dao.ProdutoDAO;
+import dto.BaristasDestaqueDTO;
+import dto.CafesEGraosDTO;
+import dto.ClienteCafeSemLancheDTO;
+import dto.ClienteUltimoPedidoDTO;
+import dto.EstatisticasDTO;
+import dto.FaturamentoDTO;
+import dto.ProdutosNaoVendidosDTO;
+import dto.RelacaoMesaPedidoDTO;
+import dto.TopProdutosDTO;
+import util.Resposta;
+import view.Layout;
 
 public class DashboardHandler implements HttpHandler {
     private final ConsultasDAO consultasDAO = new ConsultasDAO();
     private final ClienteDAO clienteDAO = new ClienteDAO();
     private final ProdutoDAO produtoDAO = new ProdutoDAO();
+    private final EstatisticasDAO estatisticasDAO = new EstatisticasDAO();
 
     @Override
     public void handle(HttpExchange troca) throws IOException {
@@ -33,6 +44,7 @@ public class DashboardHandler implements HttpHandler {
             List<TopProdutosDTO> topProdutos = consultasDAO.top10ProdutosVendidos();
             List<BaristasDestaqueDTO> baristas = consultasDAO.baristasAcimaDaMedia();
             List<CafesEGraosDTO> cafes = consultasDAO.cafesEGraos();
+            List<EstatisticasDTO> estatisticas = estatisticasDAO.calcular();
 
             List<ProdutosNaoVendidosDTO> naoVendidos = consultasDAO.produtosNaoVendidos();
             List<RelacaoMesaPedidoDTO> mesaPedido = consultasDAO.relacaoMesaPedido();
@@ -44,6 +56,7 @@ public class DashboardHandler implements HttpHandler {
             String html = DashboardView.pagina(
                     faturamento, topProdutos, baristas, cafes,
                     naoVendidos, mesaPedido, ultimoPedido, cafeSemLanche,
+                    estatisticas,
                     clienteDAO.listar().size(),
                     produtoDAO.listar().size(),
                     graficosPython
