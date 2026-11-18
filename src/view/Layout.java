@@ -24,6 +24,7 @@ public class Layout {
                         <a href="/produtos">Produtos</a>
                         <a href="/mesas">Mesas</a>
                         <a href="/funcionarios">Funcionários</a>
+                        <a href="/procedimentos">Procedimentos</a>
                         <a href="/dashboard">Dashboard</a>
                       </nav>
                     </div>

@@ -16,7 +16,7 @@ import http.DashboardHandler;
 import http.ProdutoHandler;
 import http.MesaHandler;
 import http.FuncionarioHandler;
-
+import http.ProcedimentosHandler;
 
 public class Servidor {
     public static void main(String[] args) throws IOException {
@@ -28,6 +28,7 @@ public class Servidor {
         servidor.createContext("/funcionarios", new FuncionarioHandler());
         servidor.createContext("/dashboard", new DashboardHandler());
         servidor.createContext("/graficos", new ArquivoEstaticoHandler("/graficos", Path.of("graficos_gerados")));
+        servidor.createContext("/procedimentos", new ProcedimentosHandler());
         servidor.setExecutor(null);
         servidor.start();
         System.out.println("Servidor esta no ar. http://localhost:8080/clientes");

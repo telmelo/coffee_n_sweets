@@ -403,3 +403,48 @@ textarea {
     display: none;
   }
 }
+
+.sucesso {
+  margin-bottom: 22px;
+  padding: 14px 18px;
+  border: 2px solid #b5e0c2;
+  border-radius: 16px;
+  background: #effaf2;
+  color: #1f7a45;
+  font-weight: 700;
+}
+
+.sucesso::before {
+  content: "✓ ";
+}
+
+.secao {
+  margin-bottom: 40px;
+}
+
+.secao h2 {
+  margin: 0 0 6px;
+  font-family: var(--fonte-titulo);
+  color: var(--framboesa);
+}
+
+.descricao {
+  margin: 0 0 18px;
+  color: var(--texto-suave);
+}
+
+.form-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 20px 24px;
+  background: #fff;
+  border: 2px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+
+.form-linha .campo {
+  margin: 0;
+}
