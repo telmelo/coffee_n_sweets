@@ -21,6 +21,7 @@ public class Servidor {
         servidor.createContext("/audio/", new MusicaHandler());
         servidor.createContext("/mesas", new MesaHandler());
         servidor.createContext("/funcionarios", new FuncionarioHandler());
+        servidor.createContext("/pedidos", new PedidoHandler());
         servidor.createContext("/api/dashboard", new DashboardApiHandler());
         servidor.createContext("/api/boxplot", new DashboardApiHandler());
         servidor.createContext("/dashboard", (exchange) -> {
