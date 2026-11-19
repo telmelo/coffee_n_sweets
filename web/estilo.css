@@ -1139,6 +1139,27 @@ button {
   scale: 1;
 }
 
+.formulario-filtro {
+  margin-bottom: 24px;
+}
+
+.abas {
+  margin: 20px 0 24px 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cartoes {
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.secao {
+  margin-bottom: 32px;
+  padding: 20px;
+}
+
 /* tabelas recolhíveis abrem e fecham deslizando */
 .conteudo details::details-content {
   block-size: 0;
@@ -1159,6 +1180,10 @@ button {
   border-radius: 2px;
   pointer-events: none;
   box-shadow: 0 0 0 1px rgba(122, 31, 75, 0.12);
+}
+
+[hidden] {
+  display: none !important;
 }
 
 @media (max-width: 760px) {

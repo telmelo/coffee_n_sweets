@@ -45,8 +45,10 @@ public class ArquivoEstaticoHandler implements HttpHandler {
 
     private String tipoConteudo(String nomeArquivo) {
         String nome = nomeArquivo.toLowerCase();
+        if (nome.endsWith(".html")) return "text/html; charset=utf-8";
         if (nome.endsWith(".png")) return "image/png";
         if (nome.endsWith(".css")) return "text/css; charset=utf-8";
+        if (nome.endsWith(".js")) return "application/javascript; charset=utf-8";
         return "application/octet-stream";
     }
 }

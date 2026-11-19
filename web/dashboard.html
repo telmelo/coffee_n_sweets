@@ -1,0 +1,204 @@
+<!-- Filtros do Dashboard -->
+<form id="filtro" class="formulario-filtro">
+    <div class="campo">
+        <label for="f-inicio">Início:</label>
+        <input type="date" id="f-inicio">
+    </div>
+    <div class="campo">
+        <label for="f-fim">Fim:</label>
+        <input type="date" id="f-fim">
+    </div>
+    <div class="campo">
+        <label for="f-forma">Forma de Pagamento:</label>
+        <select id="f-forma">
+            <option value="">Todas</option>
+        </select>
+    </div>
+    <div class="acoes-filtro">
+        <button type="submit" id="f-aplicar" class="botao">Filtrar</button>
+        <button type="button" id="f-limpar" class="botao secundario">Limpar</button>
+    </div>
+</form>
+
+<div id="aviso" class="alerta" hidden></div>
+
+<!-- Abas de Navegação do Dashboard -->
+<div class="abas" role="tablist">
+    <button class="aba ativa" data-aba="geral" role="tab" aria-selected="true">Visão Geral</button>
+    <button class="aba" data-aba="vendas" role="tab" aria-selected="false">Vendas & Estatísticas</button>
+    <button class="aba" data-aba="produtos" role="tab" aria-selected="false">Produtos</button>
+    <button class="aba" data-aba="clientes" role="tab" aria-selected="false">Clientes</button>
+    <button class="aba" data-aba="operacao" role="tab" aria-selected="false">Operação</button>
+</div>
+
+<!-- PAINEL: VISÃO GERAL -->
+<section class="painel" data-painel="geral">
+    <div id="cartoes-geral" class="cartoes"></div>
+    <div class="grid-graficos">
+        <div class="secao">
+            <h2>Faturamento Diário</h2>
+            <div class="canvas-container"><canvas id="g-dia"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+        <div class="secao">
+            <h2>Faturamento por Forma de Pagamento</h2>
+            <div class="canvas-container"><canvas id="g-forma"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+        <div class="secao">
+            <h2>Pedidos por Dia da Semana</h2>
+            <div class="canvas-container"><canvas id="g-semana"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+    </div>
+</section>
+
+<!-- PAINEL: VENDAS & ESTATÍSTICAS -->
+<section class="painel" data-painel="vendas" hidden>
+    <div id="cartoes-estat" class="cartoes"></div>
+
+    <div class="secao">
+        <h2>Faturamento Empilhado por Forma de Pagamento</h2>
+        <div class="canvas-container"><canvas id="g-empilhado"></canvas></div>
+        <p class="sem-dados" hidden></p>
+        <details>
+            <summary>Ver dados em tabela</summary>
+            <div id="tab-faturamento"></div>
+        </details>
+    </div>
+
+    <div class="secao">
+        <h2>Distribuição dos Pedidos por Faixa de Valor (Histograma)</h2>
+        <div class="canvas-container"><canvas id="g-hist"></canvas></div>
+        <p class="sem-dados" hidden></p>
+    </div>
+
+    <div class="secao">
+        <h2>Boxplot do Faturamento Diário (Gerado em Python)</h2>
+        <p id="boxplot-msg" class="consulta">Gerando o boxplot…</p>
+        <img id="boxplot-img" src="" alt="Boxplot de Faturamento" style="max-width:100%;" hidden>
+    </div>
+</section>
+
+<!-- PAINEL: PRODUTOS -->
+<section class="painel" data-painel="produtos" hidden>
+    <div class="grid-graficos">
+        <div class="secao">
+            <h2>Top 10 Produtos Mais Vendidos</h2>
+            <div class="canvas-container"><canvas id="g-top"></canvas></div>
+            <p class="sem-dados" hidden></p>
+            <details>
+                <summary>Ver dados em tabela</summary>
+                <div id="tab-top"></div>
+            </details>
+        </div>
+        <div class="secao">
+            <h2>Proporção de Produtos Vendidos vs Nunca Vendidos</h2>
+            <div class="canvas-container"><canvas id="g-vendidos"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+    </div>
+
+    <div class="secao">
+        <h2>Produtos Nunca Vendidos (Mais Caros)</h2>
+        <div class="canvas-container"><canvas id="g-nao-vendidos"></canvas></div>
+        <p class="sem-dados" hidden></p>
+        <details>
+            <summary>Ver dados em tabela</summary>
+            <div id="tab-nao-vendidos"></div>
+        </details>
+    </div>
+
+    <div class="secao">
+        <h2>Grãos de Cada Café e Fornecedores</h2>
+        <details open>
+            <summary>Ver dados em tabela</summary>
+            <div id="tab-cafes"></div>
+        </details>
+    </div>
+
+    <div class="secao">
+        <h2>Histórico de Alterações de Preço (Trigger)</h2>
+        <details>
+            <summary>Ver histórico em tabela</summary>
+            <div id="tab-log"></div>
+        </details>
+    </div>
+</section>
+
+<!-- PAINEL: CLIENTES -->
+<section class="painel" data-painel="clientes" hidden>
+    <div class="grid-graficos">
+        <div class="secao">
+            <h2>Clientes por Categoria de Gasto</h2>
+            <div class="canvas-container"><canvas id="g-categorias"></canvas></div>
+            <p class="sem-dados" hidden></p>
+            <details>
+                <summary>Ver dados em tabela</summary>
+                <div id="tab-categorias"></div>
+            </details>
+        </div>
+        <div class="secao">
+            <h2>Inatividade dos Clientes (Dias sem Comprar)</h2>
+            <div class="canvas-container"><canvas id="g-inatividade"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+    </div>
+
+    <div class="secao">
+        <h2>Clientes com Maior Tempo Sem Comprar</h2>
+        <div class="canvas-container"><canvas id="g-ultimo"></canvas></div>
+        <p class="sem-dados" hidden></p>
+        <details>
+            <summary>Ver dados em tabela</summary>
+            <div id="tab-ultimo"></div>
+        </details>
+    </div>
+
+    <div class="secao">
+        <h2>Clientes que Compram Café e Nunca Lanche</h2>
+        <div class="canvas-container"><canvas id="g-cafe"></canvas></div>
+        <p class="sem-dados" hidden></p>
+        <details>
+            <summary>Ver dados em tabela</summary>
+            <div id="tab-cafe"></div>
+        </details>
+    </div>
+</section>
+
+<!-- PAINEL: OPERAÇÃO -->
+<section class="painel" data-painel="operacao" hidden>
+    <div class="controles-operacao">
+        <label for="m-metrica">Métrica das Mesas:</label>
+        <select id="m-metrica">
+            <option value="pedidos">Quantidade de Pedidos</option>
+            <option value="valor">Valor Total Faturado</option>
+        </select>
+    </div>
+    <div class="grid-graficos">
+        <div class="secao">
+            <h2>Mesas e Seus Pedidos</h2>
+            <div class="canvas-container"><canvas id="g-mesas"></canvas></div>
+            <p class="sem-dados" hidden></p>
+            <details>
+                <summary>Ver dados em tabela</summary>
+                <div id="tab-mesas"></div>
+            </details>
+        </div>
+        <div class="secao">
+            <h2>Faturamento por Localização de Mesa</h2>
+            <div class="canvas-container"><canvas id="g-local"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+    </div>
+
+    <div class="secao">
+        <h2>Baristas Acima da Média de Produtividade</h2>
+        <div class="canvas-container"><canvas id="g-baristas"></canvas></div>
+        <p class="sem-dados" hidden></p>
+        <details>
+            <summary>Ver dados em tabela</summary>
+            <div id="tab-baristas"></div>
+        </details>
+    </div>
+</section>

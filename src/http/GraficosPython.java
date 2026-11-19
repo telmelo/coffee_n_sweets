@@ -1,25 +1,26 @@
 package http;
 
-import dto.BaristasDestaqueDTO;
-import dto.FaturamentoDTO;
-import dto.TopProdutosDTO;
+import dao.DashboardDAO.PedidoLinha;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+/** Chama o script Python que gera o boxplot (único gráfico que não é desenhado pelo Chart.js). */
 public class GraficosPython {
     public static final Path PASTA_SAIDA = Path.of("graficos_gerados");
     private static final Path SCRIPT = Path.of("python", "graficos.py");
 
-    private static final String[] COMANDOS_PYTHON = {"python", "py"};
+    private static final String[] COMANDOS_PYTHON = {"python", "python3", "py"};
 
-    public static boolean gerar(List<FaturamentoDTO> faturamento,
-                                List<TopProdutosDTO> topProdutos,
-                                List<BaristasDestaqueDTO> baristas) {
-        String json = montarJson(faturamento, topProdutos, baristas);
+    /** Gera graficos_gerados/faturamento_boxplot.png com os pedidos recebidos. Devolve false se o Python falhar. */
+    public static synchronized boolean gerarBoxplot(List<PedidoLinha> pedidos) {
+        String json = Json.escrever(Json.obj("faturamento", faturamentoDiarioPorForma(pedidos)));
 
         for (String comando : COMANDOS_PYTHON) {
             try {
@@ -41,67 +42,28 @@ public class GraficosPython {
                 System.err.println("Falha ao executar '" + comando + "' (código " + codigo + "):\n" + saida);
 
             } catch (IOException e) {
-
+                // comando não encontrado neste sistema: tenta o próximo
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
             }
         }
 
-        System.err.println("Não foi possível gerar os gráficos com Python. Usando os gráficos SVG como alternativa.");
+        System.err.println("Não foi possível gerar o boxplot: Python (com matplotlib) não encontrado.");
         return false;
     }
 
-    private static String montarJson(List<FaturamentoDTO> faturamento,
-                                     List<TopProdutosDTO> topProdutos,
-                                     List<BaristasDestaqueDTO> baristas) {
-        StringBuilder sb = new StringBuilder("{");
-
-        sb.append("\"faturamento\":[");
-        for (int i = 0; i < faturamento.size(); i++) {
-            FaturamentoDTO f = faturamento.get(i);
-            if (i > 0) sb.append(",");
-            sb.append("{\"data\":").append(texto(f.getData().toString()))
-                    .append(",\"forma\":").append(texto(f.getFormaPagamento()))
-                    .append(",\"valor\":").append(f.getFaturamento()).append("}");
+    // soma o valor dos pedidos de cada (dia, forma de pagamento): é o "faturamento diário" do boxplot
+    private static List<Object> faturamentoDiarioPorForma(List<PedidoLinha> pedidos) {
+        Map<String, Double> somas = new TreeMap<>();
+        for (PedidoLinha p : pedidos) {
+            somas.merge(p.data() + "|" + p.forma(), p.valor(), Double::sum);
         }
-
-        sb.append("],\"top_produtos\":[");
-        for (int i = 0; i < topProdutos.size(); i++) {
-            TopProdutosDTO p = topProdutos.get(i);
-            if (i > 0) sb.append(",");
-            sb.append("{\"nome\":").append(texto(p.getNome()))
-                    .append(",\"total\":").append(p.getTotalVendido()).append("}");
+        List<Object> linhas = new ArrayList<>();
+        for (Map.Entry<String, Double> e : somas.entrySet()) {
+            String[] chave = e.getKey().split("\\|");
+            linhas.add(Json.obj("data", chave[0], "forma", chave[1], "valor", e.getValue()));
         }
-
-        sb.append("],\"baristas\":[");
-        for (int i = 0; i < baristas.size(); i++) {
-            BaristasDestaqueDTO b = baristas.get(i);
-            if (i > 0) sb.append(",");
-            sb.append("{\"nome\":").append(texto(b.getNome()))
-                    .append(",\"itens\":").append(b.getItensPreparados()).append("}");
-        }
-
-        sb.append("]}");
-        return sb.toString();
-    }
-
-    private static String texto(String valor) {
-        if (valor == null) return "\"\"";
-        StringBuilder sb = new StringBuilder("\"");
-        for (char c : valor.toCharArray()) {
-            switch (c) {
-                case '"' -> sb.append("\\\"");
-                case '\\' -> sb.append("\\\\");
-                case '\n' -> sb.append("\\n");
-                case '\r' -> sb.append("\\r");
-                case '\t' -> sb.append("\\t");
-                default -> {
-                    if (c < 0x20) sb.append(String.format("\\u%04x", (int) c));
-                    else sb.append(c);
-                }
-            }
-        }
-        return sb.append("\"").toString();
+        return linhas;
     }
 }
