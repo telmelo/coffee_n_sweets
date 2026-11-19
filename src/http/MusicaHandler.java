@@ -35,6 +35,7 @@ public class MusicaHandler implements HttpHandler {
 
         troca.getResponseHeaders().set("Content-Type", "audio/mpeg");
         troca.getResponseHeaders().set("Accept-Ranges", "bytes");
+        troca.getResponseHeaders().set("Cache-Control", "public, max-age=86400");
         troca.sendResponseHeaders(200, bytes.length);
         try (var saida = troca.getResponseBody()) {
             saida.write(bytes);

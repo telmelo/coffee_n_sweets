@@ -1,17 +1,5 @@
 const CHAVE = "estado-musica";
-
-// música associada a cada página (primeiro segmento da URL)
-const MUSICAS = {
-    clientes: "musica1.mp3",
-    produtos: "musica2.mp3",
-    mesas: "musica3.mp3",
-    funcionarios: "musica4.mp3",
-    procedimentos: "musica5.mp3",
-    dashboard: "musica6.mp3",
-};
-
-const pagina = location.pathname.split("/").filter(Boolean)[0] || "";
-const arquivo = MUSICAS[pagina] || "musica1.mp3";
+const arquivo = "musica1.mp3";
 
 const salvo = JSON.parse(localStorage.getItem(CHAVE) || "{}");
 const mesmaMusica = salvo.musica === arquivo;
@@ -33,13 +21,12 @@ function salvarEstado() {
     } catch (e) {}
 }
 
-// retoma a posição só se for a mesma faixa da página anterior
+// retoma a posição salva e, se estava tocando, continua
 audio.addEventListener("loadedmetadata", () => {
     if (mesmaMusica && salvo.tempo) audio.currentTime = salvo.tempo;
 
     if (salvo.tocando !== false) {
         audio.play().catch(() => {
-            // navegador bloqueou o autoplay: toca no primeiro clique na página
             document.addEventListener("click", () => audio.play(), { once: true });
         });
     }
@@ -49,12 +36,14 @@ setInterval(salvarEstado, 500);
 window.addEventListener("pagehide", salvarEstado);
 
 window.alternarMusica = () => {
-    if (audio.paused) audio.play();
-    else audio.pause();
+    if (audio.paused) {
+        audio.play().catch((e) => console.error("Erro ao tocar:", e));
+    } else {
+        audio.pause();
+    }
     salvarEstado();
 };
 
-// ---------- estilo do botão ----------
 (function estilizarBotaoMusica() {
     const css = `
     body .topo .botao-musica {
