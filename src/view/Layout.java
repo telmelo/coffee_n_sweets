@@ -35,6 +35,7 @@ public class Layout {
                         <a href="/funcionarios">Funcionários</a>
                         <a href="/procedimentos">Procedimentos</a>
                         <a href="/dashboard">Dashboard</a>
+                        <button type="button" class="botao-musica" onclick="alternarMusica()">Tocar / Pausar</button>
                       </nav>
                     </div>
                   </header>
@@ -44,15 +45,25 @@ public class Layout {
                   </main>
                   <footer class="rodape">♡ Coffee n' Sweets · feito com Java, MySQL, HTML, CSS e um pouco de açúcar ♡</footer>
                   <script>%s</script>
+                  <script>%s</script>
                 </body>
                 </html>
-                """.formatted(titulo, estilo(), titulo, conteudo, script());
+                """.formatted(titulo, estilo(), titulo, conteudo, musica(), script());
     }
 
     /** Lê as animações e interações de web/app.js e embute no fim da página. */
     private static String script() {
         try {
             return Files.readString(Path.of("web", "app.js"));
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
+    /** Lê o controle da música de web/musica.js e embute na página, antes do app.js. */
+    private static String musica() {
+        try {
+            return Files.readString(Path.of("web", "musica.js"));
         } catch (IOException e) {
             return "";
         }
