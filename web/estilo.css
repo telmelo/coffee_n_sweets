@@ -1221,3 +1221,36 @@ button {
   width: auto;
   min-width: 220px;
 }
+
+.cabecalho,
+.conteudo,
+.rodape {
+  position: relative;
+  z-index: 2;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: min(17vw, 220px);
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: repeat-y;
+  background-position: center top;
+  background-size: 140px 340px;
+}
+
+/* Lateral esquerda */
+body::before {
+  left: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='340' viewBox='0 0 140 340'%3E%3Cg fill='%238ecae6' fill-opacity='0.38'%3E%3Cpath d='M52 54l6.5 14 15.2 2.1-11 10.7 2.6 15.1-13.3-7.1-13.3 7.1 2.6-15.1-11-10.7 15.2-2.1z'/%3E%3Cpath d='M86 185l4.8 10.2 11.2 1.5-8.1 7.9 1.9 11.1-9.8-5.2-9.8 5.2 1.9-11.1-8.1-7.9 11.2-1.5z'/%3E%3Cpath d='M48 292l5.6 11.9 13 1.8-9.4 9.1 2.2 12.9-11.2-6-11.2 6 2.2-12.9-9.4-9.1 13-1.8z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Lateral direita */
+body::after {
+  right: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='340' viewBox='0 0 140 340'%3E%3Cg fill='%238ecae6' fill-opacity='0.38'%3E%3Cpath d='M84 68l6.5 14 15.2 2.1-11 10.7 2.6 15.1-13.3-7.1-13.3 7.1 2.6-15.1-11-10.7 15.2-2.1z'/%3E%3Cpath d='M54 198l4.8 10.2 11.2 1.5-8.1 7.9 1.9 11.1-9.8-5.2-9.8 5.2 1.9-11.1-8.1-7.9 11.2-1.5z'/%3E%3Cpath d='M88 302l5.6 11.9 13 1.8-9.4 9.1 2.2 12.9-11.2-6-11.2 6 2.2-12.9-9.4-9.1 13-1.8z'/%3E%3C/g%3E%3C/svg%3E");
+}
