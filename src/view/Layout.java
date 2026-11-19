@@ -34,6 +34,7 @@ public class Layout {
                         <a href="/mesas">Mesas</a>
                         <a href="/funcionarios">Funcionários</a>
                         <a href="/procedimentos">Procedimentos</a>
+                        <a href="/views">Views</a>
                         <a href="/dashboard">Dashboard</a>
                         <button type="button" class="botao-musica" onclick="alternarMusica()">Tocar / Pausar</button>
                       </nav>

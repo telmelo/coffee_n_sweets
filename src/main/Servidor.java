@@ -32,6 +32,13 @@ public class Servidor {
                 os.write(bytes);
             }
         });
+        servidor.createContext("/api/views", new ViewsApiHandler());
+        servidor.createContext("/views", (exchange) -> {
+            byte[] bytes = ViewsView.pagina().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (var os = exchange.getResponseBody()) { os.write(bytes); }
+        });
         servidor.createContext("/graficos", new ArquivoEstaticoHandler("/graficos", Path.of("graficos_gerados")));
         servidor.createContext("/procedimentos", new ProcedimentosHandler());
         servidor.createContext("/", new ArquivoEstaticoHandler("/", Path.of("web")));

@@ -1,0 +1,76 @@
+<form id="filtro" class="formulario-filtro">
+    <div class="campo"><label for="f-inicio">Início:</label><input type="date" id="f-inicio"></div>
+    <div class="campo"><label for="f-fim">Fim:</label><input type="date" id="f-fim"></div>
+    <div class="campo">
+        <label for="f-forma">Forma de Pagamento:</label>
+        <select id="f-forma"><option value="">Todas</option></select>
+    </div>
+    <div class="campo">
+        <label for="f-tipo">Tipo de Consumo:</label>
+        <select id="f-tipo"><option value="">Todos</option></select>
+    </div>
+    <div class="acoes-filtro">
+        <button type="submit" id="f-aplicar" class="botao">Filtrar</button>
+        <button type="button" id="f-limpar" class="botao secundario">Limpar</button>
+    </div>
+</form>
+
+<div id="aviso" class="alerta" hidden></div>
+
+<div class="abas" role="tablist">
+    <button class="aba ativa" data-aba="vendas" role="tab" aria-selected="true">Vendas Detalhadas</button>
+    <button class="aba" data-aba="producao" role="tab" aria-selected="false">Produção por Barista</button>
+</div>
+
+<section class="painel" data-painel="vendas">
+    <p class="consulta">vw_vendas_detalhadas · pedido × item × produto × cliente × atendente × mesa · filtros de período, pagamento e consumo</p>
+    <div id="cartoes-vendas" class="cartoes"></div>
+    <div class="grid-graficos">
+        <div class="secao">
+            <h2>Faturamento por Dia</h2>
+            <div class="canvas-container"><canvas id="g-v-dia"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+        <div class="secao">
+            <h2>Faturamento por Forma de Pagamento</h2>
+            <div class="canvas-container"><canvas id="g-v-forma"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+    </div>
+    <div class="secao">
+        <h2>Produtos que Mais Faturaram</h2>
+        <div class="canvas-container"><canvas id="g-v-produto"></canvas></div>
+        <p class="sem-dados" hidden></p>
+    </div>
+    <div class="secao">
+        <h2>Itens Vendidos</h2>
+        <details open><summary>Ver dados em tabela</summary><div id="tab-vendas" class="tabela-caixa"></div></details>
+    </div>
+</section>
+
+<section class="painel" data-painel="producao" hidden>
+    <p class="consulta">vw_producao_barista_equipamento · barista × equipamento × item × produto × pedido</p>
+    <div class="controles-operacao">
+        <label for="p-barista">Barista:</label>
+        <select id="p-barista"><option value="">Todos</option></select>
+        <label for="p-equip">Equipamento:</label>
+        <select id="p-equip"><option value="">Todos</option></select>
+    </div>
+    <div id="cartoes-producao" class="cartoes"></div>
+    <div class="grid-graficos">
+        <div class="secao">
+            <h2>Unidades Produzidas por Barista</h2>
+            <div class="canvas-container"><canvas id="g-p-barista"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+        <div class="secao">
+            <h2>Unidades por Equipamento</h2>
+            <div class="canvas-container"><canvas id="g-p-equip"></canvas></div>
+            <p class="sem-dados" hidden></p>
+        </div>
+    </div>
+    <div class="secao">
+        <h2>Produção por Barista e Equipamento</h2>
+        <details open><summary>Ver dados em tabela</summary><div id="tab-producao" class="tabela-caixa"></div></details>
+    </div>
+</section>
